@@ -4,4 +4,10 @@
     <string name="food_name">Food Name</string>
     <string name="food_calories">Food Calories</string>
     <string name="submit">Submit</string>
+    <string name="report">Report</string>
+    <string name="filter">Filter</string>
+    <string name="more_options">More Options</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="cal">Cal</string>
 </resources>
