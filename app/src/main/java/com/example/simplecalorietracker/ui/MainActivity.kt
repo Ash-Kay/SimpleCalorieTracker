@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import com.example.simplecalorietracker.R
 import com.example.simplecalorietracker.databinding.ActivityMainBinding
 
@@ -21,6 +22,10 @@ class MainActivity : AppCompatActivity() {
             R.id.navHostFragment
         ) as NavHostFragment
         navController = navHostFragment.navController
+        NavigationUI.setupActionBarWithNavController(this, navController)
+    }
 
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp()
     }
 }

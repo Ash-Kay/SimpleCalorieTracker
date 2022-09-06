@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.simplecalorietracker.R
 import com.example.simplecalorietracker.databinding.FragmentUserHomeBinding
 import com.example.simplecalorietracker.model.entity.FoodEntry
 import com.example.simplecalorietracker.ui.user.adapter.UserFoodEntryAdapter
@@ -27,8 +29,11 @@ class UserHomeFragment : Fragment() {
         userHomeViewModel.text.observe(viewLifecycleOwner) {
         }
 
-        val foodEntry = FoodEntry(1, "12th Oct", "Chole Bhature", 2000)
+        binding.fab.setOnClickListener {
+            findNavController().navigate(R.id.action_userHomeFragment_to_addFoodEntryFragment)
+        }
 
+        val foodEntry = FoodEntry(1, "12th Oct", "Chole Bhature", 2000)
         val foodEntryList = listOf(foodEntry, foodEntry, foodEntry, foodEntry, foodEntry)
 
         binding.rvFoodEntries.adapter = UserFoodEntryAdapter(foodEntryList)

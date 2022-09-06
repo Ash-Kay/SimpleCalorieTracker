@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Simple Calorie Tracker</string>
+    <string name="add_cta">Add Food Entry</string>
+    <string name="food_name">Food Name</string>
+    <string name="food_calories">Food Calories</string>
+    <string name="submit">Submit</string>
 </resources>
