@@ -13,5 +13,5 @@ data class FoodEntry(
     val foodName: String,
 
     @SerializedName("calorieCount")
-    val calorieCount: Int,
+    val calorieCount: Long,
 )

@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.simplecalorietracker.R
 import com.example.simplecalorietracker.databinding.ItemFoodEntryBinding
 import com.example.simplecalorietracker.model.entity.FoodEntry
+import kotlin.math.ln
+import kotlin.math.pow
 
 class UserFoodEntryAdapter(private val courseList: List<FoodEntry>) :
     RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodEntryViewHolder>() {
@@ -30,7 +32,7 @@ class UserFoodEntryAdapter(private val courseList: List<FoodEntry>) :
             with(binding) {
                 tvDate.text = foodEntry.date
                 tvFoodName.text = foodEntry.foodName
-                tvCalorieCount.text = foodEntry.calorieCount.toString()
+                tvCalorieCount.text = compactNumber(foodEntry.calorieCount)
 
                 btnMoreOption.setOnClickListener {
                     val popup = PopupMenu(binding.root.context, btnMoreOption)
@@ -51,6 +53,15 @@ class UserFoodEntryAdapter(private val courseList: List<FoodEntry>) :
                     popup.show()
                 }
             }
+        }
+
+        private fun compactNumber(number: Long): String {
+            if (number < 1000) return "" + number
+            val exp = (ln(number.toDouble()) / ln(1000.0)).toInt()
+            return String.format(
+                "%.1f %cCal", number / 1000.0.pow(exp.toDouble()),
+                "kMGTPE"[exp - 1]
+            )
         }
     }
 }

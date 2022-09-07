@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.simplecalorietracker.databinding.FragmentAddFoodEntryBinding
@@ -22,41 +21,38 @@ class AddFoodEntryFragment : Fragment() {
     private var _binding: FragmentAddFoodEntryBinding? = null
     private val binding get() = _binding!!
     private val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-    private val unixTime = MutableLiveData<Long>()
     private lateinit var timePicker: MaterialTimePicker
     private lateinit var datePicker: MaterialDatePicker<Long>
+    private lateinit var viewModel: AddFoodEntryViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val addFoodEntryViewModel = ViewModelProvider(this)[AddFoodEntryViewModel::class.java]
+        viewModel = ViewModelProvider(this)[AddFoodEntryViewModel::class.java]
         _binding = FragmentAddFoodEntryBinding.inflate(inflater, container, false)
-
-        addFoodEntryViewModel.text.observe(viewLifecycleOwner) {
-        }
 
         setCurrentDateTime()
         setupTimePicker()
         setupDatePicker()
 
-        unixTime.observe(viewLifecycleOwner) {
+        viewModel.dateTime.observe(viewLifecycleOwner) {
             val date = sdf.format(it)
             binding.etDateTime.setText(date)
         }
 
         datePicker.addOnPositiveButtonClickListener {
-            unixTime.postValue(it)
+            viewModel.updateDateTime(it)
             timePicker.show(parentFragmentManager, "TIME_PICKER")
         }
 
         timePicker.addOnPositiveButtonClickListener {
             val cal = Calendar.getInstance()
-            cal.timeInMillis = unixTime.value ?: MaterialDatePicker.todayInUtcMilliseconds()
+            cal.timeInMillis = viewModel.dateTime.value ?: MaterialDatePicker.todayInUtcMilliseconds()
             cal.set(Calendar.HOUR, timePicker.hour)
             cal.set(Calendar.MINUTE, timePicker.minute)
-            unixTime.postValue(cal.timeInMillis)
+            viewModel.updateDateTime(cal.timeInMillis)
         }
 
         binding.etDateTime.setOnFocusChangeListener { v, hasFocus ->
@@ -111,7 +107,7 @@ class AddFoodEntryFragment : Fragment() {
     private fun setCurrentDateTime() {
         val currTimestamp = System.currentTimeMillis()
         val date = sdf.format(currTimestamp)
-        unixTime.postValue(currTimestamp)
+        viewModel.updateDateTime(currTimestamp)
         binding.etDateTime.setText(date)
     }
 

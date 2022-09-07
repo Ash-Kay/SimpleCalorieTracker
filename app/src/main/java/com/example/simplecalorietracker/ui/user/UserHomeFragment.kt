@@ -37,7 +37,8 @@ class UserHomeFragment : Fragment() {
         }
 
         val foodEntry = FoodEntry(1, "12th Oct", "Chole Bhature", 2000)
-        val foodEntryList = listOf(foodEntry, foodEntry, foodEntry, foodEntry, foodEntry)
+        val foodEntry1 = FoodEntry(2, "13th Oct", "Chole Bhature Special pro max ultra", 200000000000000)
+        val foodEntryList = listOf(foodEntry, foodEntry1, foodEntry, foodEntry, foodEntry)
 
         binding.rvFoodEntries.adapter = UserFoodEntryAdapter(foodEntryList)
         binding.rvFoodEntries.layoutManager = LinearLayoutManager(context)

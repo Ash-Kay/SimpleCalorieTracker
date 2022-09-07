@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 
 class AddFoodEntryViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is UserHome Fragment"
+    private val _dateTime = MutableLiveData<Long>()
+    val dateTime: LiveData<Long> = _dateTime
+
+    fun updateDateTime(dateTime: Long) {
+        _dateTime.postValue(dateTime)
     }
-    val text: LiveData<String> = _text
 }

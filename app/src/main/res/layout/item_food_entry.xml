@@ -57,19 +57,10 @@
             android:textColor="@color/black"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/tvFoodName"
-            app:layout_constraintEnd_toStartOf="@+id/tvCalorieUnit"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toTopOf="@+id/tvFoodName"
-            tools:text="1233123" />
-
-        <TextView
-            android:id="@+id/tvCalorieUnit"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/cal"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvFoodName"
-            app:layout_constraintEnd_toEndOf="parent" />
+            tools:text="1233123123123123" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
