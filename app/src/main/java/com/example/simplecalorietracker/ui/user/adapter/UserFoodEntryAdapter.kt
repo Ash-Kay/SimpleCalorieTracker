@@ -11,7 +11,7 @@ import com.example.simplecalorietracker.model.entity.FoodEntry
 import kotlin.math.ln
 import kotlin.math.pow
 
-class UserFoodEntryAdapter(private val courseList: List<FoodEntry>) :
+class UserFoodEntryAdapter(private val foodEntryList: List<FoodEntry>) :
     RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodEntryViewHolder>() {
     private lateinit var binding: ItemFoodEntryBinding
 
@@ -21,12 +21,12 @@ class UserFoodEntryAdapter(private val courseList: List<FoodEntry>) :
     }
 
     override fun onBindViewHolder(holder: UserFoodEntryViewHolder, position: Int) {
-        holder.bind(courseList[position])
+        holder.bind(foodEntryList[position])
     }
 
-    override fun getItemCount() = courseList.size
+    override fun getItemCount() = foodEntryList.size
 
-    class UserFoodEntryViewHolder(val binding: ItemFoodEntryBinding) :
+    class UserFoodEntryViewHolder(private val binding: ItemFoodEntryBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(foodEntry: FoodEntry) {
             with(binding) {
