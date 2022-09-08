@@ -44,6 +44,8 @@ dependencies {
     def hiltVersion = "2.41"
     def rxJavaVersion = "3.0.0"
     def retrofitVersion = "2.9.0"
+    def roomVersion = "2.4.3"
+
 
     /* ====================================================
     *                       Base
@@ -79,6 +81,15 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.5.0"
     implementation "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
     implementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+
+    /* ====================================================
+    *                       Room
+    * ===================================================*/
+
+    implementation "androidx.room:room-runtime:$roomVersion"
+    annotationProcessor "androidx.room:room-compiler:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-rxjava3:$roomVersion"
 
     /* ====================================================
     *                   Utils/Others

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.simplecalorietracker.databinding.FragmentAddFoodEntryBinding
@@ -13,9 +14,11 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 
+@AndroidEntryPoint
 class AddFoodEntryFragment : Fragment() {
 
     private var _binding: FragmentAddFoodEntryBinding? = null
@@ -23,14 +26,14 @@ class AddFoodEntryFragment : Fragment() {
     private val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
     private lateinit var timePicker: MaterialTimePicker
     private lateinit var datePicker: MaterialDatePicker<Long>
-    private lateinit var viewModel: AddFoodEntryViewModel
+
+    private val viewModel: AddFoodEntryViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = ViewModelProvider(this)[AddFoodEntryViewModel::class.java]
         _binding = FragmentAddFoodEntryBinding.inflate(inflater, container, false)
 
         setCurrentDateTime()
@@ -49,7 +52,8 @@ class AddFoodEntryFragment : Fragment() {
 
         timePicker.addOnPositiveButtonClickListener {
             val cal = Calendar.getInstance()
-            cal.timeInMillis = viewModel.dateTime.value ?: MaterialDatePicker.todayInUtcMilliseconds()
+            cal.timeInMillis =
+                viewModel.dateTime.value ?: MaterialDatePicker.todayInUtcMilliseconds()
             cal.set(Calendar.HOUR, timePicker.hour)
             cal.set(Calendar.MINUTE, timePicker.minute)
             viewModel.updateDateTime(cal.timeInMillis)
@@ -64,6 +68,12 @@ class AddFoodEntryFragment : Fragment() {
 
         binding.btnSubmit.setOnClickListener {
             //if success
+            viewModel.submit(
+                binding.etFoodName.text.toString(),
+                binding.etFoodCalorie.text.toString().toLong(),
+                //TODO: check how to handle
+                viewModel.dateTime.value ?: 0
+            )
             findNavController().popBackStack()
             //else show error toast
         }

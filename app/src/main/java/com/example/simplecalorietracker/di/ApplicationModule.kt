@@ -1,6 +1,12 @@
 package com.example.simplecalorietracker.di
 
+import android.app.Application
+import androidx.room.Room
 import com.example.simplecalorietracker.BuildConfig
+import com.example.simplecalorietracker.data.FoodEntryRepositoryImpl
+import com.example.simplecalorietracker.data.local.FoodEntryDao
+import com.example.simplecalorietracker.data.local.FoodEntryDatabase
+import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,6 +20,22 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class ApplicationModule {
+
+    @Provides
+    @Singleton
+    fun provideNoteDatabase(app: Application): FoodEntryDatabase {
+        return Room.databaseBuilder(
+            app,
+            FoodEntryDatabase::class.java,
+            FoodEntryDatabase.DATABASE_NAME
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFoodEntryDao(db: FoodEntryDatabase): FoodEntryDao {
+        return db.foodEntryDao
+    }
 
     @Provides
     @Singleton
@@ -33,5 +55,11 @@ class ApplicationModule {
             okHttpClientBuilder.addInterceptor(loggingInterceptor)
         }
         return okHttpClientBuilder.build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFoodEntryRepository(foodEntryDao: FoodEntryDao): FoodEntryRepository {
+        return FoodEntryRepositoryImpl(foodEntryDao)
     }
 }

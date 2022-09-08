@@ -7,13 +7,19 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplecalorietracker.R
 import com.example.simplecalorietracker.databinding.ItemFoodEntryBinding
-import com.example.simplecalorietracker.model.entity.FoodEntry
+import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import kotlin.math.ln
 import kotlin.math.pow
 
-class UserFoodEntryAdapter(private val foodEntryList: List<FoodEntry>) :
-    RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodEntryViewHolder>() {
+class UserFoodEntryAdapter : RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodEntryViewHolder>() {
     private lateinit var binding: ItemFoodEntryBinding
+    private val foodEntryList: MutableList<FoodEntryEntity> = mutableListOf()
+
+    fun updateFoodEntryList(list: List<FoodEntryEntity>) {
+        foodEntryList.clear()
+        foodEntryList.addAll(list)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserFoodEntryViewHolder {
         binding = ItemFoodEntryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -28,9 +34,9 @@ class UserFoodEntryAdapter(private val foodEntryList: List<FoodEntry>) :
 
     class UserFoodEntryViewHolder(private val binding: ItemFoodEntryBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(foodEntry: FoodEntry) {
+        fun bind(foodEntry: FoodEntryEntity) {
             with(binding) {
-                tvDate.text = foodEntry.date
+                tvDate.text = foodEntry.date.toString()
                 tvFoodName.text = foodEntry.foodName
                 tvCalorieCount.text = compactNumber(foodEntry.calorieCount)
 
