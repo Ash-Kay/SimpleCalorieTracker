@@ -3,6 +3,7 @@ package com.example.simplecalorietracker.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "foodEntry")
 data class FoodEntryEntity(
@@ -10,28 +11,15 @@ data class FoodEntryEntity(
     @ColumnInfo(name = "id")
     val id: Int,
 
-    @ColumnInfo(name = "date")
-    val date: Long,
+    @ColumnInfo(name = "timestamp")
+    @SerializedName("timestamp")
+    val timestamp: Long,
 
-    @ColumnInfo(name = "foodName")
-    val foodName: String,
+    @ColumnInfo(name = "name")
+    @SerializedName("name")
+    val name: String,
 
-    @ColumnInfo(name = "calorieCount")
-    val calorieCount: Long,
+    @ColumnInfo(name = "calorie")
+    @SerializedName("calorie")
+    val calorie: Long,
 )
-
-//@Entity(tableName = "foodEntry")
-//data class FoodEntryEntity(
-//    @PrimaryKey(autoGenerate = true)
-//    @SerializedName("id")
-//    val id: Int,
-//
-//    @SerializedName("date")
-//    val date: Long,
-//
-//    @SerializedName("foodName")
-//    val foodName: String,
-//
-//    @SerializedName("calorieCount")
-//    val calorieCount: Long,
-//)

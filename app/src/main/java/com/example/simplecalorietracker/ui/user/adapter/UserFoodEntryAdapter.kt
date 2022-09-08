@@ -18,6 +18,7 @@ class UserFoodEntryAdapter : RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodE
     fun updateFoodEntryList(list: List<FoodEntryEntity>) {
         foodEntryList.clear()
         foodEntryList.addAll(list)
+        //TODO: CHECK
         notifyDataSetChanged()
     }
 
@@ -36,9 +37,10 @@ class UserFoodEntryAdapter : RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodE
         RecyclerView.ViewHolder(binding.root) {
         fun bind(foodEntry: FoodEntryEntity) {
             with(binding) {
-                tvDate.text = foodEntry.date.toString()
-                tvFoodName.text = foodEntry.foodName
-                tvCalorieCount.text = compactNumber(foodEntry.calorieCount)
+                //TODO: change to readable
+                tvDate.text = foodEntry.timestamp.toString()
+                tvFoodName.text = foodEntry.name
+                tvCalorieCount.text = compactNumber(foodEntry.calorie)
 
                 btnMoreOption.setOnClickListener {
                     val popup = PopupMenu(binding.root.context, btnMoreOption)

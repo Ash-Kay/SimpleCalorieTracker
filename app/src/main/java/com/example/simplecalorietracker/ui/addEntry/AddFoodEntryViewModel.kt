@@ -25,8 +25,10 @@ class AddFoodEntryViewModel @Inject constructor(val addFoodEntryUsecase: AddFood
         addFoodEntryUsecase(FoodEntryEntity(0, timestamp, foodName, foodCalorie))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
+            .subscribe ({
                 println("ASHTEST: ADDED SUCESS!!")
-            }
+            }, {
+                println("ASHTEST: ERR!!" + it)
+            })
     }
 }

@@ -2,16 +2,28 @@ package com.example.simplecalorietracker.data
 
 import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.data.local.FoodEntryDao
+import com.example.simplecalorietracker.data.remote.RetrofitService
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
+import com.example.simplecalorietracker.utils.NetworkHandler
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 
-class FoodEntryRepositoryImpl @Inject constructor(private val foodEntryDao: FoodEntryDao) :
-    FoodEntryRepository {
+class FoodEntryRepositoryImpl @Inject constructor(
+    private val foodEntryDao: FoodEntryDao,
+    private val retrofitService: RetrofitService,
+    private val networkHandler: NetworkHandler
+) : FoodEntryRepository {
     override fun getFoodEntries(): Flowable<List<FoodEntryEntity>> {
-        return foodEntryDao.getFoodEntries()
+        return if (networkHandler.isNetworkAvailable()) {
+            //TODO: FIX
+            retrofitService.getFoodEntries("", 1)
+        } else {
+            return foodEntryDao.getFoodEntries()
+        }
     }
 
     override fun getFoodEntryById(id: Int): Single<FoodEntryEntity> {

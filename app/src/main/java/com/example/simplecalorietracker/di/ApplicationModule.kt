@@ -6,7 +6,9 @@ import com.example.simplecalorietracker.BuildConfig
 import com.example.simplecalorietracker.data.FoodEntryRepositoryImpl
 import com.example.simplecalorietracker.data.local.FoodEntryDao
 import com.example.simplecalorietracker.data.local.FoodEntryDatabase
+import com.example.simplecalorietracker.data.remote.RetrofitService
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
+import com.example.simplecalorietracker.utils.NetworkHandler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,6 +16,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
@@ -39,12 +42,14 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit {
+    fun provideRetrofitService(): RetrofitService {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(createClient())
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+            .create(RetrofitService::class.java)
     }
 
     private fun createClient(): OkHttpClient {
@@ -59,7 +64,11 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideFoodEntryRepository(foodEntryDao: FoodEntryDao): FoodEntryRepository {
-        return FoodEntryRepositoryImpl(foodEntryDao)
+    fun provideFoodEntryRepository(
+        foodEntryDao: FoodEntryDao,
+        retrofitService: RetrofitService,
+        networkHandler: NetworkHandler
+    ): FoodEntryRepository {
+        return FoodEntryRepositoryImpl(foodEntryDao, retrofitService, networkHandler)
     }
 }

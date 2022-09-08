@@ -21,8 +21,11 @@ class UserHomeViewModel @Inject constructor(val getFoodEntriesUsecase: GetFoodEn
         getFoodEntriesUsecase()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
+            .subscribe({
+                println("ASHTEST:scc " + it)
                 _foodEntries.postValue(it)
-            }
+            }, {
+                println("ASHTEST:ERR " + it)
+            })
     }
 }
