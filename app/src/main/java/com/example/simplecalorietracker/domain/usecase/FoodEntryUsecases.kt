@@ -7,9 +7,15 @@ import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
-class GetFoodEntriesUsecase @Inject constructor(private val repository: FoodEntryRepository) {
+class GetFoodEntriesRemoteUsecase @Inject constructor(private val repository: FoodEntryRepository) {
+    operator fun invoke(): Single<List<FoodEntryEntity>> {
+        return repository.getFoodEntriesRemote()
+    }
+}
+
+class GetFoodEntriesLocalUsecase @Inject constructor(private val repository: FoodEntryRepository) {
     operator fun invoke(): Flowable<List<FoodEntryEntity>> {
-        return repository.getFoodEntries()
+        return repository.getFoodEntriesLocal()
     }
 }
 
@@ -21,7 +27,7 @@ class GetFoodEntryUsecase @Inject constructor(private val repository: FoodEntryR
 
 class UpdateLocalFoodEntriesUsecase @Inject constructor(private val repository: FoodEntryRepository) {
     operator fun invoke(foodEntriesList: List<FoodEntryEntity>): Completable {
-        return repository.insertFoodEntries(foodEntriesList)
+        return repository.clearFoodEntries().andThen(repository.insertFoodEntries(foodEntriesList))
     }
 }
 

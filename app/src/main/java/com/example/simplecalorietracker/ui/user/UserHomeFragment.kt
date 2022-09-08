@@ -23,6 +23,7 @@ class UserHomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        viewModel.getFoodEntries()
     }
 
     override fun onCreateView(
@@ -36,13 +37,18 @@ class UserHomeFragment : Fragment() {
             findNavController().navigate(R.id.action_userHomeFragment_to_addFoodEntryFragment)
         }
 
+        binding.srlHomeRoot.setOnRefreshListener {
+            viewModel.getFoodEntries()
+        }
+
         adapter = UserFoodEntryAdapter()
         binding.rvFoodEntries.adapter = adapter
         binding.rvFoodEntries.layoutManager = LinearLayoutManager(context)
 
-        viewModel.getFoodEntries()
-
         viewModel.foodEntries.observe(viewLifecycleOwner) {
+            if (binding.srlHomeRoot.isRefreshing) {
+                binding.srlHomeRoot.isRefreshing = false
+            }
             adapter.updateFoodEntryList(it)
         }
 

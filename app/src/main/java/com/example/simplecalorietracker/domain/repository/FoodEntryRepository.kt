@@ -6,7 +6,9 @@ import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 
 interface FoodEntryRepository {
-    fun getFoodEntries(): Flowable<List<FoodEntryEntity>>
+    fun getFoodEntriesLocal(): Flowable<List<FoodEntryEntity>>
+
+    fun getFoodEntriesRemote(): Single<List<FoodEntryEntity>>
 
     fun getFoodEntryById(id: Int): Single<FoodEntryEntity>
 

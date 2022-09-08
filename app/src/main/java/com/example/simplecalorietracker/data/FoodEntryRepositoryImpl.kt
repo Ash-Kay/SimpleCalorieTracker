@@ -18,13 +18,13 @@ class FoodEntryRepositoryImpl @Inject constructor(
     private val retrofitService: RetrofitService,
     private val networkHandler: NetworkHandler
 ) : FoodEntryRepository {
-    override fun getFoodEntries(): Flowable<List<FoodEntryEntity>> {
-        return if (networkHandler.isNetworkAvailable()) {
-            //TODO: FIX
-            retrofitService.getFoodEntries("", 1)
-        } else {
-            return foodEntryDao.getFoodEntries()
-        }
+
+    override fun getFoodEntriesLocal(): Flowable<List<FoodEntryEntity>> {
+        return foodEntryDao.getFoodEntries()
+    }
+
+    override fun getFoodEntriesRemote(): Single<List<FoodEntryEntity>> {
+        return retrofitService.getFoodEntries("", 1)
     }
 
     override fun getFoodEntryById(id: Int): Single<FoodEntryEntity> {
@@ -42,7 +42,7 @@ class FoodEntryRepositoryImpl @Inject constructor(
     ): Single<FoodEntryEntity> {
         return retrofitService.createFoodEntry(
             //TODO: FIX
-            "",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJoZWxsb0Bhc2hpc2hrdW1hcnMuY29tIiwicm9sZSI6IkFETUlOIiwidXNlcm5hbWUiOiJBc2hpc2giLCJpYXQiOjE2NjI2NjQ4MjMsImV4cCI6MTY2MzI2OTYyM30.iNtMG7TJiWNKA2HcfG_9iL1wgkr_KNpwR-FhYh_Yb60",
             CreateFoodEntryRequest(
                 foodName,
                 foodCalorie,
