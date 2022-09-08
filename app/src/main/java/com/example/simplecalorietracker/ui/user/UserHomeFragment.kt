@@ -38,6 +38,7 @@ class UserHomeFragment : Fragment() {
         }
 
         binding.srlHomeRoot.setOnRefreshListener {
+            //TODO: if offline cancel loader
             viewModel.getFoodEntries()
         }
 

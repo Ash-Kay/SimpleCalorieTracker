@@ -3,10 +3,12 @@ package com.example.simplecalorietracker.di
 import android.app.Application
 import androidx.room.Room
 import com.example.simplecalorietracker.BuildConfig
+import com.example.simplecalorietracker.data.AuthRepositoryImpl
 import com.example.simplecalorietracker.data.FoodEntryRepositoryImpl
 import com.example.simplecalorietracker.data.local.FoodEntryDao
 import com.example.simplecalorietracker.data.local.FoodEntryDatabase
 import com.example.simplecalorietracker.data.remote.RetrofitService
+import com.example.simplecalorietracker.domain.repository.AuthRepository
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
 import com.example.simplecalorietracker.utils.NetworkHandler
 import dagger.Module
@@ -70,5 +72,13 @@ class ApplicationModule {
         networkHandler: NetworkHandler
     ): FoodEntryRepository {
         return FoodEntryRepositoryImpl(foodEntryDao, retrofitService, networkHandler)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        retrofitService: RetrofitService
+    ): AuthRepository {
+        return AuthRepositoryImpl(retrofitService)
     }
 }

@@ -39,7 +39,6 @@ class UserFoodEntryAdapter : RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodE
         RecyclerView.ViewHolder(binding.root) {
         fun bind(foodEntry: FoodEntryEntity) {
             with(binding) {
-                //TODO: change to readable
                 tvDate.text = foodEntry.timestamp.toHumanDate()
                 tvFoodName.text = foodEntry.name
                 tvCalorieCount.text = foodEntry.calorie.compactNumber()

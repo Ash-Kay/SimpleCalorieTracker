@@ -5,6 +5,9 @@ import io.reactivex.rxjava3.core.Single
 import retrofit2.http.*
 
 interface RetrofitService {
+    @GET("/api/v1/auth/login")
+    fun getAuthToken(): Single<BaseResponse<AuthTokenResponse>>
+
     @GET("/api/v1/foodentries")
     fun getFoodEntries(
         @Header("Authorization") authToken: String,
