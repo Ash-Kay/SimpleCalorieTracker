@@ -15,6 +15,6 @@ interface RetrofitService {
     @POST("/api/v1/foodentries")
     fun createFoodEntry(
         @Header("Authorization") authToken: String,
-        @Body foodEntry: FoodEntryEntity
+        @Body foodEntryRequest: CreateFoodEntryRequest
     ): Single<FoodEntryEntity>
 }

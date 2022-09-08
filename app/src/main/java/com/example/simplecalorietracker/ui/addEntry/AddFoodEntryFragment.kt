@@ -4,9 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.simplecalorietracker.databinding.FragmentAddFoodEntryBinding
 import com.example.simplecalorietracker.utils.CalendarRangeValidator
@@ -15,6 +16,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import dagger.hilt.android.AndroidEntryPoint
+import okhttp3.internal.toLongOrDefault
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -66,15 +68,42 @@ class AddFoodEntryFragment : Fragment() {
             }
         }
 
+        binding.etFoodName.addTextChangedListener {
+            if (binding.inputFoodName.isErrorEnabled) {
+                binding.inputFoodName.isErrorEnabled = false
+            }
+        }
+
+        binding.etFoodCalorie.addTextChangedListener {
+            if (binding.inputFoodCalorie.isErrorEnabled) {
+                binding.inputFoodCalorie.isErrorEnabled = false
+            }
+        }
+
         binding.btnSubmit.setOnClickListener {
             //if success
+            //TODO: validation
+            if (binding.etFoodName.text.toString().isBlank()) {
+                binding.inputFoodName.error = "Name can't be blank"
+                return@setOnClickListener
+            }
+
+            if (binding.etFoodCalorie.text.toString().isBlank()) {
+                binding.inputFoodCalorie.error = "Calories can't be blank"
+                return@setOnClickListener
+            }
+
             viewModel.submit(
                 binding.etFoodName.text.toString(),
-                binding.etFoodCalorie.text.toString().toLong(),
+                binding.etFoodCalorie.text.toString().toLongOrDefault(0),
                 //TODO: check how to handle
-                viewModel.dateTime.value ?: 0
+                viewModel.dateTime.value ?: 0,
+                {
+                    findNavController().popBackStack()
+                }, {
+                    Toast.makeText(context, "Error Adding Food Entry!", Toast.LENGTH_SHORT).show()
+                }
             )
-            findNavController().popBackStack()
             //else show error toast
         }
 

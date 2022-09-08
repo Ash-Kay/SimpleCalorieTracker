@@ -2,6 +2,7 @@ package com.example.simplecalorietracker.data
 
 import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.data.local.FoodEntryDao
+import com.example.simplecalorietracker.data.remote.CreateFoodEntryRequest
 import com.example.simplecalorietracker.data.remote.RetrofitService
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
 import com.example.simplecalorietracker.utils.NetworkHandler
@@ -30,8 +31,24 @@ class FoodEntryRepositoryImpl @Inject constructor(
         return foodEntryDao.getFoodEntryById(id)
     }
 
-    override fun insertFoodEntry(foodEntry: FoodEntryEntity): Completable {
+    override fun insertFoodEntryLocal(foodEntry: FoodEntryEntity): Completable {
         return foodEntryDao.insertFoodEntry(foodEntry)
+    }
+
+    override fun createFoodEntryRemote(
+        foodName: String,
+        foodCalorie: Long,
+        timestamp: Long
+    ): Single<FoodEntryEntity> {
+        return retrofitService.createFoodEntry(
+            //TODO: FIX
+            "",
+            CreateFoodEntryRequest(
+                foodName,
+                foodCalorie,
+                timestamp
+            )
+        )
     }
 
     override fun insertFoodEntries(foodEntries: List<FoodEntryEntity>): Completable {

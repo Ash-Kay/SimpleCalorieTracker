@@ -19,8 +19,32 @@ class GetFoodEntryUsecase @Inject constructor(private val repository: FoodEntryR
     }
 }
 
-class AddFoodEntryUsecase @Inject constructor(private val repository: FoodEntryRepository) {
-    operator fun invoke(foodEntry: FoodEntryEntity): Completable {
-        return repository.insertFoodEntry(foodEntry)
+class UpdateLocalFoodEntriesUsecase @Inject constructor(private val repository: FoodEntryRepository) {
+    operator fun invoke(foodEntriesList: List<FoodEntryEntity>): Completable {
+        return repository.insertFoodEntries(foodEntriesList)
+    }
+}
+
+class CreateFoodEntryUsecase @Inject constructor(
+    private val repository: FoodEntryRepository
+) {
+    operator fun invoke(
+        foodName: String,
+        foodCalorie: Long,
+        timestamp: Long
+    ): Single<FoodEntryEntity> {
+        return repository.createFoodEntryRemote(
+            foodName = foodName,
+            foodCalorie = foodCalorie,
+            timestamp = timestamp
+        )
+    }
+}
+
+class AddFoodEntryToLocalUsecase @Inject constructor(
+    private val repository: FoodEntryRepository
+) {
+    operator fun invoke(foodEntryEntity: FoodEntryEntity): Completable {
+        return repository.insertFoodEntryLocal(foodEntryEntity)
     }
 }

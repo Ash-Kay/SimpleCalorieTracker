@@ -10,7 +10,9 @@ interface FoodEntryRepository {
 
     fun getFoodEntryById(id: Int): Single<FoodEntryEntity>
 
-    fun insertFoodEntry(foodEntry: FoodEntryEntity): Completable
+    fun insertFoodEntryLocal(foodEntry: FoodEntryEntity): Completable
+
+    fun createFoodEntryRemote(foodName: String, foodCalorie: Long, timestamp: Long) : Single<FoodEntryEntity>
 
     fun insertFoodEntries(foodEntries: List<FoodEntryEntity>): Completable
 
