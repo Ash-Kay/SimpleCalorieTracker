@@ -8,8 +8,8 @@ import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
 class GetFoodEntriesRemoteUsecase @Inject constructor(private val repository: FoodEntryRepository) {
-    operator fun invoke(): Single<List<FoodEntryEntity>> {
-        return repository.getFoodEntriesRemote()
+    operator fun invoke(start: Long, end: Long): Single<List<FoodEntryEntity>> {
+        return repository.getFoodEntriesRemote(start, end)
     }
 }
 

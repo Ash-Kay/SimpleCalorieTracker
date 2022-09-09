@@ -7,11 +7,9 @@ import com.example.simplecalorietracker.data.remote.RetrofitService
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
 import com.example.simplecalorietracker.utils.AuthUtils
 import com.example.simplecalorietracker.utils.NetworkHandler
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 
 class FoodEntryRepositoryImpl @Inject constructor(
@@ -24,9 +22,9 @@ class FoodEntryRepositoryImpl @Inject constructor(
         return foodEntryDao.getFoodEntries()
     }
 
-    override fun getFoodEntriesRemote(): Single<List<FoodEntryEntity>> {
+    override fun getFoodEntriesRemote(start: Long, end: Long): Single<List<FoodEntryEntity>> {
         //TODO: Check
-        return retrofitService.getFoodEntries(AuthUtils.AUTH_TOKEN ?: "", 1)
+        return retrofitService.getFoodEntries(AuthUtils.AUTH_TOKEN ?: "", 1, start, end)
     }
 
     override fun getFoodEntryById(id: Int): Single<FoodEntryEntity> {

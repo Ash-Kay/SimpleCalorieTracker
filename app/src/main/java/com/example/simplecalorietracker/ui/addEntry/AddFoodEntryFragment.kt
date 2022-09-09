@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.simplecalorietracker.databinding.FragmentAddFoodEntryBinding
 import com.example.simplecalorietracker.utils.CalendarRangeValidator
+import com.example.simplecalorietracker.utils.Constants
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -146,7 +147,7 @@ class AddFoodEntryFragment : Fragment() {
 
     private fun setupCalenderConstraint(): Pair<Long, CalendarConstraints> {
         val today = MaterialDatePicker.todayInUtcMilliseconds()
-        val last3year = MaterialDatePicker.todayInUtcMilliseconds() - 3 * 31_556_952_000
+        val last3year = MaterialDatePicker.todayInUtcMilliseconds() - Constants.threeYearsInMillis
 
         val constraints = CalendarConstraints.Builder()
             .setOpenAt(today)

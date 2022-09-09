@@ -16,7 +16,9 @@ interface RetrofitService {
     @GET("/api/v1/foodentries")
     fun getFoodEntries(
         @Header("Authorization") authToken: String,
-        @Query("page") pageNo: Int
+        @Query("page") pageNo: Int,
+        @Query("start") start: Long,
+        @Query("end") end: Long
     ): Single<List<FoodEntryEntity>>
 
     @POST("/api/v1/foodentries")

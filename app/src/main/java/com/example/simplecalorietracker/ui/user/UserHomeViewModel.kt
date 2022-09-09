@@ -41,9 +41,9 @@ class UserHomeViewModel @Inject constructor(
     }
 
     //TODO: Show toast if netowrk not avaliable
-    fun getFoodEntries() {
+    fun getFoodEntries(start: Long = 0, end: Long = 0) {
         if (networkHandler.isNetworkAvailable()) {
-            getFoodEntriesRemoteUsecase()
+            getFoodEntriesRemoteUsecase(start, end)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
