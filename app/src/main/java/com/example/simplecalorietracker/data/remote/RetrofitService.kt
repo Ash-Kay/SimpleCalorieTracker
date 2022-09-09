@@ -8,6 +8,11 @@ interface RetrofitService {
     @GET("/api/v1/auth/login")
     fun getAuthToken(): Single<BaseResponse<AuthTokenResponse>>
 
+    @GET("/api/v1/users")
+    fun getUserDetails(
+        @Header("Authorization") authToken: String
+    ): Single<BaseResponse<GetUserDetailsResponse>>
+
     @GET("/api/v1/foodentries")
     fun getFoodEntries(
         @Header("Authorization") authToken: String,

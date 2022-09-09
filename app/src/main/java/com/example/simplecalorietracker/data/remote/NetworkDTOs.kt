@@ -19,3 +19,15 @@ data class BaseResponse<T>(
 )
 
 data class AuthTokenResponse(val token: String)
+
+data class GetUserDetailsResponse(
+    val id: Int,
+    val username: String,
+    val email: String,
+    val role: Role
+)
+
+enum class Role(val roleName: String) {
+    USER("USER"),
+    ADMIN("ADMIN")
+}

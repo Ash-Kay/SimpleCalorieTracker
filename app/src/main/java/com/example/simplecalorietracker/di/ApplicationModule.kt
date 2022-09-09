@@ -1,7 +1,10 @@
 package com.example.simplecalorietracker.di
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.simplecalorietracker.BuildConfig
 import com.example.simplecalorietracker.data.AuthRepositoryImpl
 import com.example.simplecalorietracker.data.FoodEntryRepositoryImpl
@@ -14,6 +17,7 @@ import com.example.simplecalorietracker.utils.NetworkHandler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -44,24 +48,36 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideRetrofitService(): RetrofitService {
+    fun provideRetrofitService(okHttpClient: OkHttpClient): RetrofitService {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
-            .client(createClient())
+            .client(okHttpClient)
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(RetrofitService::class.java)
     }
 
-    private fun createClient(): OkHttpClient {
-        val okHttpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
-        if (BuildConfig.DEBUG) {
-            val loggingInterceptor =
-                HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
-            okHttpClientBuilder.addInterceptor(loggingInterceptor)
-        }
-        return okHttpClientBuilder.build()
+    @Provides
+    @Singleton
+    fun createClient(@ApplicationContext context: Context): OkHttpClient {
+        val logging = HttpLoggingInterceptor()
+        if (BuildConfig.DEBUG)
+            logging.level = HttpLoggingInterceptor.Level.BODY
+        else
+            logging.level = HttpLoggingInterceptor.Level.NONE
+
+        val chuckerInterceptor = ChuckerInterceptor.Builder(context)
+            .collector(ChuckerCollector(context))
+            .maxContentLength(250000L)
+            .redactHeaders(emptySet())
+            .alwaysReadResponseBody(false)
+            .build()
+
+        return OkHttpClient.Builder()
+            .addInterceptor(chuckerInterceptor)
+            .addInterceptor(logging)
+            .build()
     }
 
     @Provides
