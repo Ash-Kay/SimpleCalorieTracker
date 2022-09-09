@@ -47,13 +47,16 @@ class UserHomeViewModel @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                updateLocalFoodEntriesUsecase(it)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        Timber.d("Local Food Entry List updated successfully", it)
-                    }
-                    .also { dis -> disposable.add(dis) }
+                //Only cache if no filter applied
+                if (start == 0L && end == 0L) {
+                    updateLocalFoodEntriesUsecase(it)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe {
+                            Timber.d("Local Food Entry List updated successfully", it)
+                        }
+                        .also { dis -> disposable.add(dis) }
+                }
                 _viewState.postValue(UserHomeViewState.DataFetchSuccess(it))
                 Timber.d("Remote food entry list fetch successful", it)
             }, {
