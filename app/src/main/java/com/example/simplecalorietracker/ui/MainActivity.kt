@@ -1,7 +1,6 @@
 package com.example.simplecalorietracker.ui
 
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -12,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.example.simplecalorietracker.R
 import com.example.simplecalorietracker.databinding.ActivityMainBinding
+import com.example.simplecalorietracker.utils.AuthUtils
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -50,15 +50,31 @@ class MainActivity : AppCompatActivity() {
                 Timber.d("loading! token")
             }
             MainViewState.AuthCheck -> {
-                viewModel.getAuthToken()
+                if (AuthUtils.isUserLoggedIn(this)) {
+                    val userDetails = AuthUtils.getUserDetailsFromCache(this)
+                    viewModel.useCacheAuthToken(userDetails)
+                } else {
+                    viewModel.getAuthToken()
+                }
             }
             is MainViewState.AuthCheckSuccess -> {
                 binding.btnRetry.visibility = View.GONE
                 viewModel.updateUiBasedOnUserRole(state.userDetails.role)
+                if (state.isServerLogin) {
+                    //Set in usecase
+                    val token = AuthUtils.AUTH_TOKEN
+                    if (token != null) {
+                        AuthUtils.saveAuthToken(this, token)
+                        AuthUtils.saveUserDetails(this, state.userDetails)
+                    }
+                }
             }
             is MainViewState.Error -> {
                 binding.btnRetry.visibility = View.VISIBLE
                 Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
+                if (state.isCacheCorrupt) {
+                    AuthUtils.clearAuthDetails(this)
+                }
             }
             MainViewState.ShowAdminHome -> {
                 val graph = getInflatedGraph()

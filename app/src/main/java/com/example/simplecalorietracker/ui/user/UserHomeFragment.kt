@@ -2,6 +2,7 @@ package com.example.simplecalorietracker.ui.user
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,12 +13,17 @@ import com.example.simplecalorietracker.databinding.FragmentUserHomeBinding
 import com.example.simplecalorietracker.ui.user.adapter.UserFoodEntryAdapter
 import com.example.simplecalorietracker.utils.CalendarRangeValidator
 import com.example.simplecalorietracker.utils.Constants
+import com.example.simplecalorietracker.utils.NetworkHandler
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserHomeFragment : Fragment() {
+
+    @Inject
+    lateinit var networkHandler: NetworkHandler
 
     private var _binding: FragmentUserHomeBinding? = null
     private val binding get() = _binding!!
@@ -29,7 +35,6 @@ class UserHomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        viewModel.getFoodEntries()
     }
 
     override fun onCreateView(
@@ -46,13 +51,12 @@ class UserHomeFragment : Fragment() {
         }
 
         binding.srlHomeRoot.setOnRefreshListener {
-            //TODO: if offline cancel loader
-            viewModel.getFoodEntries()
+            checkInternetAndGetFoodEntries()
         }
 
         dateRangePicker.addOnPositiveButtonClickListener {
             //Added one day to make it till EOD
-            viewModel.getFoodEntries(it.first, it.second + Constants.oneDayInMillis)
+            checkInternetAndGetFoodEntries(it.first, it.second + Constants.oneDayInMillis)
         }
 
 //        dateRangePicker.addOnNegativeButtonClickListener {
@@ -63,14 +67,35 @@ class UserHomeFragment : Fragment() {
         binding.rvFoodEntries.adapter = adapter
         binding.rvFoodEntries.layoutManager = LinearLayoutManager(context)
 
-        viewModel.foodEntries.observe(viewLifecycleOwner) {
-            if (binding.srlHomeRoot.isRefreshing) {
-                binding.srlHomeRoot.isRefreshing = false
-            }
-            adapter.updateFoodEntryList(it)
+        viewModel.viewState.observe(viewLifecycleOwner) {
+            renderViewState(it)
         }
 
         return binding.root
+    }
+
+    private fun renderViewState(state: UserHomeViewState) {
+        when (state) {
+            UserHomeViewState.Idle -> {
+                checkInternetAndGetFoodEntries()
+            }
+            UserHomeViewState.Loading -> {
+                binding.srlHomeRoot.isRefreshing = true
+            }
+            is UserHomeViewState.DataFetchSuccess -> {
+                binding.srlHomeRoot.isRefreshing = false
+                adapter.updateFoodEntryList(state.foodEntries)
+            }
+            is UserHomeViewState.CacheDataFetchSuccess -> {
+                binding.srlHomeRoot.isRefreshing = false
+                adapter.updateFoodEntryList(state.foodEntries)
+            }
+            is UserHomeViewState.Error -> {
+                binding.srlHomeRoot.isRefreshing = false
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                viewModel.getCacheFoodEntries()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -83,6 +108,14 @@ class UserHomeFragment : Fragment() {
             dateRangePicker.show(parentFragmentManager, "DATE_PICKER_RANGE")
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun checkInternetAndGetFoodEntries(start: Long = 0, end: Long = 0) {
+        if (networkHandler.isNetworkAvailable()) {
+            viewModel.getFoodEntries(start, end)
+        } else {
+            viewModel.showNoInternetError()
+        }
     }
 
     private fun setupDatePicker() {

@@ -3,11 +3,9 @@ package com.example.simplecalorietracker.ui.user
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.domain.usecase.GetFoodEntriesLocalUsecase
 import com.example.simplecalorietracker.domain.usecase.GetFoodEntriesRemoteUsecase
 import com.example.simplecalorietracker.domain.usecase.UpdateLocalFoodEntriesUsecase
-import com.example.simplecalorietracker.utils.NetworkHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -19,49 +17,74 @@ import javax.inject.Inject
 class UserHomeViewModel @Inject constructor(
     val getFoodEntriesRemoteUsecase: GetFoodEntriesRemoteUsecase,
     val getFoodEntriesLocalUsecase: GetFoodEntriesLocalUsecase,
-    val updateLocalFoodEntriesUsecase: UpdateLocalFoodEntriesUsecase,
-    private val networkHandler: NetworkHandler
+    val updateLocalFoodEntriesUsecase: UpdateLocalFoodEntriesUsecase
 ) : ViewModel() {
 
-    private val _foodEntries = MutableLiveData<List<FoodEntryEntity>>()
-    val foodEntries: LiveData<List<FoodEntryEntity>> = _foodEntries
+    private val _viewState = MutableLiveData<UserHomeViewState>(UserHomeViewState.Idle)
+    val viewState: LiveData<UserHomeViewState> = _viewState
+
     private val disposable = CompositeDisposable()
+    private val flowDisposable = CompositeDisposable()
 
     init {
         //Observe local cache, if it updates, update the ui
+        _viewState.postValue(UserHomeViewState.Loading)
         getFoodEntriesLocalUsecase()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                _foodEntries.postValue(it)
+                _viewState.postValue(UserHomeViewState.DataFetchSuccess(it))
                 Timber.d("Local food entry list fetch successful", it)
             }, {
+                _viewState.postValue(UserHomeViewState.Error("Error fetching data"))
+                Timber.e("ERROR!! Fetching Food Entry List", it)
+            }).also { dis -> flowDisposable.add(dis) }
+    }
+
+    fun getFoodEntries(start: Long = 0, end: Long = 0) {
+        _viewState.postValue(UserHomeViewState.Loading)
+        getFoodEntriesRemoteUsecase(start, end)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                updateLocalFoodEntriesUsecase(it)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {
+                        Timber.d("Local Food Entry List updated successfully", it)
+                    }
+                    .also { dis -> disposable.add(dis) }
+                _viewState.postValue(UserHomeViewState.DataFetchSuccess(it))
+                Timber.d("Remote food entry list fetch successful", it)
+            }, {
+                _viewState.postValue(UserHomeViewState.Error("Error fetching data"))
                 Timber.e("ERROR!! Fetching Food Entry List", it)
             }).also { dis -> disposable.add(dis) }
     }
 
-    //TODO: Show toast if netowrk not avaliable
-    fun getFoodEntries(start: Long = 0, end: Long = 0) {
-        if (networkHandler.isNetworkAvailable()) {
-            getFoodEntriesRemoteUsecase(start, end)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    updateLocalFoodEntriesUsecase(it)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe { Timber.d("Local Food Entry List updated successfully", it) }
-                        .also { dis -> disposable.add(dis) }
-                    _foodEntries.postValue(it)
-                    Timber.d("Remote food entry list fetch successful", it)
-                }, {
-                    Timber.e("ERROR!! Fetching Food Entry List", it)
-                }).also { dis -> disposable.add(dis) }
-        }
+    fun getCacheFoodEntries() {
+        flowDisposable.clear()
+
+        _viewState.postValue(UserHomeViewState.Loading)
+        getFoodEntriesLocalUsecase()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                _viewState.postValue(UserHomeViewState.CacheDataFetchSuccess(it))
+                Timber.d("Local food entry list fetch successful", it)
+            }, {
+                _viewState.postValue(UserHomeViewState.Error("Error fetching data"))
+                Timber.e("ERROR!! Fetching Food Entry List", it)
+            }).also { dis -> flowDisposable.add(dis) }
+    }
+
+    fun showNoInternetError() {
+        _viewState.postValue(UserHomeViewState.Error("No Internet!"))
     }
 
     override fun onCleared() {
         super.onCleared()
         disposable.clear()
+        flowDisposable.clear()
     }
 }

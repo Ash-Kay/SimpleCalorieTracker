@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.simplecalorietracker.databinding.FragmentAddFoodEntryBinding
 import com.example.simplecalorietracker.utils.CalendarRangeValidator
 import com.example.simplecalorietracker.utils.Constants
+import com.example.simplecalorietracker.utils.NetworkHandler
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -20,10 +21,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toLongOrDefault
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.absoluteValue
 
 @AndroidEntryPoint
 class AddFoodEntryFragment : Fragment() {
+
+    @Inject
+    lateinit var networkHandler: NetworkHandler
 
     private var _binding: FragmentAddFoodEntryBinding? = null
     private val binding get() = _binding!!
@@ -107,6 +112,11 @@ class AddFoodEntryFragment : Fragment() {
                     binding.inputFoodCalorie.error = "Input too long, max length 9 digit"
                     return@setOnClickListener
                 }
+            }
+
+            if (networkHandler.isNetworkAvailable().not()) {
+                Toast.makeText(context, "No Internet!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
 
             viewModel.submit(
