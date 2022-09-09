@@ -19,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toLongOrDefault
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.absoluteValue
 
 @AndroidEntryPoint
 class AddFoodEntryFragment : Fragment() {
@@ -81,21 +82,35 @@ class AddFoodEntryFragment : Fragment() {
         }
 
         binding.btnSubmit.setOnClickListener {
-            //if success
-            //TODO: validation
-            if (binding.etFoodName.text.toString().isBlank()) {
-                binding.inputFoodName.error = "Name can't be blank"
-                return@setOnClickListener
+            with(binding.etFoodName.text.toString()) {
+                if (isBlank()) {
+                    binding.inputFoodName.error = "Food Name can't be blank"
+                    return@setOnClickListener
+                }
+                if (length > 30) {
+                    binding.inputFoodName.error = "Input too long, max length 30"
+                    return@setOnClickListener
+                }
             }
 
-            if (binding.etFoodCalorie.text.toString().isBlank()) {
-                binding.inputFoodCalorie.error = "Calories can't be blank"
-                return@setOnClickListener
+            with(binding.etFoodCalorie.text.toString()) {
+                if (isBlank()) {
+                    binding.inputFoodCalorie.error = "Calories can't be blank"
+                    return@setOnClickListener
+                }
+                if (toLongOrNull() == null) {
+                    binding.inputFoodCalorie.error = "Not valid calorie input"
+                    return@setOnClickListener
+                }
+                if (toLongOrDefault(0).absoluteValue >= Int.MAX_VALUE) {
+                    binding.inputFoodCalorie.error = "Input too long, max length 9 digit"
+                    return@setOnClickListener
+                }
             }
 
             viewModel.submit(
                 binding.etFoodName.text.toString(),
-                binding.etFoodCalorie.text.toString().toLongOrDefault(0),
+                binding.etFoodCalorie.text.toString().toLongOrDefault(0).absoluteValue,
                 //TODO: check how to handle
                 viewModel.dateTime.value ?: 0,
                 {
@@ -104,7 +119,6 @@ class AddFoodEntryFragment : Fragment() {
                     Toast.makeText(context, "Error Adding Food Entry!", Toast.LENGTH_SHORT).show()
                 }
             )
-            //else show error toast
         }
 
         return binding.root

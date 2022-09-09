@@ -6,12 +6,10 @@ import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplecalorietracker.R
-import com.example.simplecalorietracker.databinding.ItemFoodEntryBinding
 import com.example.simplecalorietracker.data.entity.FoodEntryEntity
-import com.example.simplecalorietracker.utils.compactNumber
+import com.example.simplecalorietracker.databinding.ItemFoodEntryBinding
+import com.example.simplecalorietracker.utils.prettyCount
 import com.example.simplecalorietracker.utils.toHumanDate
-import kotlin.math.ln
-import kotlin.math.pow
 
 class UserFoodEntryAdapter : RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodEntryViewHolder>() {
     private lateinit var binding: ItemFoodEntryBinding
@@ -41,7 +39,7 @@ class UserFoodEntryAdapter : RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodE
             with(binding) {
                 tvDate.text = foodEntry.timestamp.toHumanDate()
                 tvFoodName.text = foodEntry.name
-                tvCalorieCount.text = foodEntry.calorie.compactNumber()
+                tvCalorieCount.text = foodEntry.calorie.prettyCount()
 
                 btnMoreOption.setOnClickListener {
                     val popup = PopupMenu(binding.root.context, btnMoreOption)
