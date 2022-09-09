@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/userHomeFragment"
         android:name="com.example.simplecalorietracker.ui.user.UserHomeFragment"
-        android:label="Home" >
+        android:label="Home">
         <action
             android:id="@+id/action_userHomeFragment_to_addFoodEntryFragment"
             app:destination="@id/addFoodEntryFragment" />
@@ -17,4 +17,9 @@
         android:id="@+id/addFoodEntryFragment"
         android:name="com.example.simplecalorietracker.ui.addEntry.AddFoodEntryFragment"
         android:label="Add Food Entry" />
+
+    <fragment
+        android:id="@+id/adminHomeFragment"
+        android:name="com.example.simplecalorietracker.ui.admin.AdminHomeFragment"
+        android:label="AdminHome" />
 </navigation>

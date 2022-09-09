@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.example.simplecalorietracker.R
@@ -17,6 +18,7 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
+    private lateinit var navHostFragment: NavHostFragment
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -25,17 +27,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navHostFragment = supportFragmentManager.findFragmentById(
+        navHostFragment = supportFragmentManager.findFragmentById(
             R.id.navHostFragment
         ) as NavHostFragment
         setSupportActionBar(binding.toolBar)
         navController = navHostFragment.navController
-
-        val inflater = navHostFragment.navController.navInflater
-        val graph = inflater.inflate(R.navigation.main_navigation)
-//        graph.setStartDestination(R.id.addFoodEntryFragment)
-//        navHostFragment.navController.graph = graph//this stat nav
-//        NavigationUI.setupActionBarWithNavController(this, navController)
 
         viewModel.viewState.observe(this) {
             renderViewState(it)
@@ -45,20 +41,40 @@ class MainActivity : AppCompatActivity() {
     private fun renderViewState(state: MainViewState) {
         when (state) {
             MainViewState.Loading -> {
+                //TODO: show loader
                 Timber.d("loading! token")
             }
             MainViewState.AuthCheck -> {
                 viewModel.getAuthToken()
             }
             is MainViewState.AuthCheckSuccess -> {
-
+                viewModel.updateUiBasedOnUserRole(state.userDetails.role)
             }
             is MainViewState.Error -> {
+                //TODO: show retry
                 Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
             }
-            MainViewState.ShowAdminHome -> TODO()
-            MainViewState.ShowUserHome -> TODO()
+            MainViewState.ShowAdminHome -> {
+                val graph = getInflatedGraph()
+                graph.setStartDestination(R.id.adminHomeFragment)
+                updateGraphInHost(graph)
+            }
+            MainViewState.ShowUserHome -> {
+                val graph = getInflatedGraph()
+                graph.setStartDestination(R.id.userHomeFragment)
+                updateGraphInHost(graph)
+            }
         }
+    }
+
+    private fun getInflatedGraph(): NavGraph {
+        val inflater = navHostFragment.navController.navInflater
+        return inflater.inflate(R.navigation.main_navigation)
+    }
+
+    private fun updateGraphInHost(graph: NavGraph) {
+        navHostFragment.navController.graph = graph
+        NavigationUI.setupActionBarWithNavController(this, navController)
     }
 
     override fun onSupportNavigateUp(): Boolean {

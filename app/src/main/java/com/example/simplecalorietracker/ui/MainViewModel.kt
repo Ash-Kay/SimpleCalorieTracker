@@ -3,6 +3,7 @@ package com.example.simplecalorietracker.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.simplecalorietracker.data.remote.Role
 import com.example.simplecalorietracker.domain.usecase.GetAuthTokenAndUserDetailsUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -15,7 +16,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(val getAuthTokenAndUserDetailsUsecase: GetAuthTokenAndUserDetailsUsecase) :
     ViewModel() {
 
-    private val _viewState = MutableLiveData<MainViewState>()
+    private val _viewState = MutableLiveData<MainViewState>(MainViewState.AuthCheck)
     val viewState: LiveData<MainViewState> = _viewState
 
     private val disposable = CompositeDisposable()
@@ -26,15 +27,23 @@ class MainViewModel @Inject constructor(val getAuthTokenAndUserDetailsUsecase: G
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                println("ASHTEST: user" + it.data)
-                Timber.d("AuthToken fetch successful", it)
+                _viewState.postValue(MainViewState.AuthCheckSuccess(it.data))
+                Timber.d("AuthToken and UserDetails fetch successful", it)
             }, {
-                Timber.e("ERROR!! Fetching AuthToken", it)
+                Timber.e("ERROR!! Fetching AuthToken and UserDetails", it)
             }).also { dis -> disposable.add(dis) }
     }
 
     override fun onCleared() {
         super.onCleared()
         disposable.clear()
+    }
+
+    fun updateUiBasedOnUserRole(role: Role) {
+        if (role == Role.ADMIN) {
+            _viewState.postValue(MainViewState.ShowAdminHome)
+        } else {
+            _viewState.postValue(MainViewState.ShowUserHome)
+        }
     }
 }
