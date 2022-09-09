@@ -5,6 +5,7 @@ import com.example.simplecalorietracker.data.local.FoodEntryDao
 import com.example.simplecalorietracker.data.remote.CreateFoodEntryRequest
 import com.example.simplecalorietracker.data.remote.RetrofitService
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
+import com.example.simplecalorietracker.utils.AuthUtils
 import com.example.simplecalorietracker.utils.NetworkHandler
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
@@ -24,7 +25,8 @@ class FoodEntryRepositoryImpl @Inject constructor(
     }
 
     override fun getFoodEntriesRemote(): Single<List<FoodEntryEntity>> {
-        return retrofitService.getFoodEntries("", 1)
+        //TODO: Check
+        return retrofitService.getFoodEntries(AuthUtils.AUTH_TOKEN ?: "", 1)
     }
 
     override fun getFoodEntryById(id: Int): Single<FoodEntryEntity> {
@@ -42,7 +44,7 @@ class FoodEntryRepositoryImpl @Inject constructor(
     ): Single<FoodEntryEntity> {
         return retrofitService.createFoodEntry(
             //TODO: FIX
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJoZWxsb0Bhc2hpc2hrdW1hcnMuY29tIiwicm9sZSI6IkFETUlOIiwidXNlcm5hbWUiOiJBc2hpc2giLCJpYXQiOjE2NjI2NjQ4MjMsImV4cCI6MTY2MzI2OTYyM30.iNtMG7TJiWNKA2HcfG_9iL1wgkr_KNpwR-FhYh_Yb60",
+            AuthUtils.AUTH_TOKEN ?: "",
             CreateFoodEntryRequest(
                 foodName,
                 foodCalorie,

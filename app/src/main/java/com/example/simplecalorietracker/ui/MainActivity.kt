@@ -2,6 +2,7 @@ package com.example.simplecalorietracker.ui
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +37,10 @@ class MainActivity : AppCompatActivity() {
         viewModel.viewState.observe(this) {
             renderViewState(it)
         }
+
+        binding.btnRetry.setOnClickListener {
+            viewModel.getAuthToken()
+        }
     }
 
     private fun renderViewState(state: MainViewState) {
@@ -48,10 +53,11 @@ class MainActivity : AppCompatActivity() {
                 viewModel.getAuthToken()
             }
             is MainViewState.AuthCheckSuccess -> {
+                binding.btnRetry.visibility = View.GONE
                 viewModel.updateUiBasedOnUserRole(state.userDetails.role)
             }
             is MainViewState.Error -> {
-                //TODO: show retry
+                binding.btnRetry.visibility = View.VISIBLE
                 Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
             }
             MainViewState.ShowAdminHome -> {

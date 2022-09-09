@@ -11,4 +11,5 @@
     <string name="delete">Delete</string>
     <string name="cal">Cal</string>
     <string name="select_date_and_time">Select Date and Time</string>
+    <string name="retry_login">Retry Login</string>
 </resources>

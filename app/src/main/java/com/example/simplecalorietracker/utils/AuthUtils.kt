@@ -15,7 +15,7 @@ object AuthUtils {
         return authToken
     }
 
-    fun clearAuthDetails(context: Context){
+    fun clearAuthDetails(context: Context) {
         AUTH_TOKEN = null
         SharedPreferences.clearData(context, AUTH_TOKEN_KEY)
     }

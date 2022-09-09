@@ -30,6 +30,7 @@ class MainViewModel @Inject constructor(val getAuthTokenAndUserDetailsUsecase: G
                 _viewState.postValue(MainViewState.AuthCheckSuccess(it.data))
                 Timber.d("AuthToken and UserDetails fetch successful", it)
             }, {
+                _viewState.postValue(MainViewState.Error("Error logging in!"))
                 Timber.e("ERROR!! Fetching AuthToken and UserDetails", it)
             }).also { dis -> disposable.add(dis) }
     }
