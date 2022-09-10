@@ -6,8 +6,6 @@ import com.example.simplecalorietracker.data.remote.CreateFoodEntryRequest
 import com.example.simplecalorietracker.data.remote.GetReportResponse
 import com.example.simplecalorietracker.data.remote.RetrofitService
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
-import com.example.simplecalorietracker.utils.AuthUtils
-import com.example.simplecalorietracker.utils.NetworkHandler
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
@@ -15,8 +13,7 @@ import javax.inject.Inject
 
 class FoodEntryRepositoryImpl @Inject constructor(
     private val foodEntryDao: FoodEntryDao,
-    private val retrofitService: RetrofitService,
-    private val networkHandler: NetworkHandler
+    private val retrofitService: RetrofitService
 ) : FoodEntryRepository {
 
     override fun getFoodEntriesLocal(): Flowable<List<FoodEntryEntity>> {
@@ -24,8 +21,7 @@ class FoodEntryRepositoryImpl @Inject constructor(
     }
 
     override fun getFoodEntriesRemote(start: Long, end: Long): Single<List<FoodEntryEntity>> {
-        //TODO: Check
-        return retrofitService.getFoodEntries(AuthUtils.AUTH_TOKEN ?: "", 1, start, end)
+        return retrofitService.getFoodEntries(1, start, end)
     }
 
     override fun getFoodEntryById(id: Int): Single<FoodEntryEntity> {
@@ -42,8 +38,6 @@ class FoodEntryRepositoryImpl @Inject constructor(
         timestamp: Long
     ): Single<FoodEntryEntity> {
         return retrofitService.createFoodEntry(
-            //TODO: FIX
-            AuthUtils.AUTH_TOKEN ?: "",
             CreateFoodEntryRequest(
                 foodName,
                 foodCalorie,
@@ -63,7 +57,6 @@ class FoodEntryRepositoryImpl @Inject constructor(
         timestamp: Long
     ): Completable {
         return retrofitService.updateFoodEntry(
-            AuthUtils.AUTH_TOKEN ?: "",
             id,
             CreateFoodEntryRequest(
                 foodName,
@@ -74,7 +67,7 @@ class FoodEntryRepositoryImpl @Inject constructor(
     }
 
     override fun deleteFoodEntryRemote(foodEntry: FoodEntryEntity): Completable {
-        return retrofitService.deleteFoodEntry(AuthUtils.AUTH_TOKEN ?: "", foodEntry.id)
+        return retrofitService.deleteFoodEntry(foodEntry.id)
     }
 
     override fun deleteFoodEntry(foodEntry: FoodEntryEntity): Completable {
@@ -86,6 +79,6 @@ class FoodEntryRepositoryImpl @Inject constructor(
     }
 
     override fun getReport(): Single<GetReportResponse> {
-        return retrofitService.getReport(AuthUtils.AUTH_TOKEN ?: "")
+        return retrofitService.getReport()
     }
 }

@@ -7,6 +7,7 @@ sealed class MainViewState {
     data class Error(val message: String, val isCacheCorrupt: Boolean = false) : MainViewState()
     object AuthCheck : MainViewState()
     data class AuthCheckSuccess(
+        val token: String,
         val userDetails: GetUserDetailsResponse,
         val isServerLogin: Boolean = false
     ) : MainViewState()

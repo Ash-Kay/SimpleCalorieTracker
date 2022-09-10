@@ -50,10 +50,13 @@ class MainActivity : AppCompatActivity() {
                 Timber.d("loading! token")
             }
             MainViewState.AuthCheck -> {
-                if (AuthUtils.isUserLoggedIn(this)) {
-                    val userDetails = AuthUtils.getUserDetailsFromCache(this)
-                    viewModel.useCacheAuthToken(userDetails)
+                val token = AuthUtils.getAuthToken(this)
+                val userDetails = AuthUtils.getUserDetailsFromCache(this)
+                if (token != null && userDetails != null) {
+                    viewModel.useCacheAuthTokenForLogin(token, userDetails)
                 } else {
+                    Timber.e("Error logging in using cache, making API call!")
+                    AuthUtils.clearAuthDetails(this)
                     viewModel.getAuthToken()
                 }
             }
@@ -61,12 +64,9 @@ class MainActivity : AppCompatActivity() {
                 binding.btnRetry.visibility = View.GONE
                 viewModel.updateUiBasedOnUserRole(state.userDetails.role)
                 if (state.isServerLogin) {
-                    //Set in usecase
-                    val token = AuthUtils.AUTH_TOKEN
-                    if (token != null) {
-                        AuthUtils.saveAuthToken(this, token)
-                        AuthUtils.saveUserDetails(this, state.userDetails)
-                    }
+                    AuthUtils.AUTH_TOKEN = state.token
+                    AuthUtils.saveAuthToken(this, state.token)
+                    AuthUtils.saveUserDetails(this, state.userDetails)
                 }
             }
             is MainViewState.Error -> {

@@ -16,7 +16,6 @@ interface RetrofitService {
 
     @GET("/api/v1/foodentries")
     fun getFoodEntries(
-        @Header("Authorization") authToken: String,
         @Query("page") pageNo: Int,
         @Query("start") start: Long,
         @Query("end") end: Long
@@ -24,25 +23,20 @@ interface RetrofitService {
 
     @POST("/api/v1/foodentries")
     fun createFoodEntry(
-        @Header("Authorization") authToken: String,
         @Body foodEntryRequest: CreateFoodEntryRequest
     ): Single<FoodEntryEntity>
 
     @PATCH("/api/v1/foodentries/{id}")
     fun updateFoodEntry(
-        @Header("Authorization") authToken: String,
         @Path("id") id: Int,
         @Body foodEntryRequest: CreateFoodEntryRequest
     ): Completable
 
     @DELETE("/api/v1/foodentries/{id}")
     fun deleteFoodEntry(
-        @Header("Authorization") authToken: String,
         @Path("id") id: Int
     ): Completable
 
     @GET("/api/v1/foodentries/report")
-    fun getReport(
-        @Header("Authorization") authToken: String
-    ): Single<GetReportResponse>
+    fun getReport(): Single<GetReportResponse>
 }

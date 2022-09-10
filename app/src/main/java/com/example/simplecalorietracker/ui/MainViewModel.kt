@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.example.simplecalorietracker.data.remote.GetUserDetailsResponse
 import com.example.simplecalorietracker.data.remote.Role
 import com.example.simplecalorietracker.domain.usecase.GetAuthTokenAndUserDetailsUsecase
-import com.example.simplecalorietracker.utils.AuthUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -29,7 +28,13 @@ class MainViewModel @Inject constructor(val getAuthTokenAndUserDetailsUsecase: G
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                _viewState.postValue(MainViewState.AuthCheckSuccess(it.data, true))
+                _viewState.postValue(
+                    MainViewState.AuthCheckSuccess(
+                        it.first.data.token,
+                        it.second.data,
+                        true
+                    )
+                )
                 Timber.d("AuthToken and UserDetails fetch successful", it)
             }, {
                 _viewState.postValue(MainViewState.Error("Error logging in!"))
@@ -37,12 +42,8 @@ class MainViewModel @Inject constructor(val getAuthTokenAndUserDetailsUsecase: G
             }).also { dis -> disposable.add(dis) }
     }
 
-    fun useCacheAuthToken(userDetails: GetUserDetailsResponse?) {
-        if (userDetails != null) {
-            _viewState.postValue(MainViewState.AuthCheckSuccess(userDetails))
-        } else {
-            _viewState.postValue(MainViewState.Error("Error logging in!", true))
-        }
+    fun useCacheAuthTokenForLogin(token: String, userDetails: GetUserDetailsResponse) {
+        _viewState.postValue(MainViewState.AuthCheckSuccess(token, userDetails))
     }
 
     override fun onCleared() {

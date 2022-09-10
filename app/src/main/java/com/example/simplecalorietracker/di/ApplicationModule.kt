@@ -13,6 +13,7 @@ import com.example.simplecalorietracker.data.local.FoodEntryDatabase
 import com.example.simplecalorietracker.data.remote.RetrofitService
 import com.example.simplecalorietracker.domain.repository.AuthRepository
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
+import com.example.simplecalorietracker.utils.AuthUtils
 import com.example.simplecalorietracker.utils.NetworkHandler
 import dagger.Module
 import dagger.Provides
@@ -77,6 +78,13 @@ class ApplicationModule {
         return OkHttpClient.Builder()
             .addInterceptor(chuckerInterceptor)
             .addInterceptor(logging)
+            .addInterceptor {
+                it.proceed(
+                    it.request().newBuilder()
+                        .addHeader("Authorization", AuthUtils.getAuthToken(context).orEmpty())
+                        .build()
+                )
+            }
             .build()
     }
 
@@ -84,10 +92,9 @@ class ApplicationModule {
     @Singleton
     fun provideFoodEntryRepository(
         foodEntryDao: FoodEntryDao,
-        retrofitService: RetrofitService,
-        networkHandler: NetworkHandler
+        retrofitService: RetrofitService
     ): FoodEntryRepository {
-        return FoodEntryRepositoryImpl(foodEntryDao, retrofitService, networkHandler)
+        return FoodEntryRepositoryImpl(foodEntryDao, retrofitService)
     }
 
     @Provides
