@@ -35,7 +35,6 @@ class AddFoodEntryFragment : Fragment() {
 
     private var _binding: FragmentAddFoodEntryBinding? = null
     private val binding get() = _binding!!
-    private val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
     private lateinit var timePicker: MaterialTimePicker
     private lateinit var datePicker: MaterialDatePicker<Long>
 
@@ -55,8 +54,7 @@ class AddFoodEntryFragment : Fragment() {
         setupDatePicker()
 
         viewModel.dateTime.observe(viewLifecycleOwner) {
-            val date = sdf.format(it)
-            binding.etDateTime.setText(date)
+            binding.etDateTime.setText(it.toHumanDate())
         }
 
         datePicker.addOnPositiveButtonClickListener {
@@ -229,9 +227,8 @@ class AddFoodEntryFragment : Fragment() {
 
     private fun setCurrentDateTime() {
         val currTimestamp = System.currentTimeMillis()
-        val date = sdf.format(currTimestamp)
         viewModel.updateDateTime(currTimestamp)
-        binding.etDateTime.setText(date)
+        binding.etDateTime.setText(currTimestamp.toHumanDate())
     }
 
     override fun onDestroyView() {
