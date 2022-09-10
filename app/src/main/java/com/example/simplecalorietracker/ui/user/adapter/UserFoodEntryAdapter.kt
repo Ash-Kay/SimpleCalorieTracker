@@ -11,7 +11,10 @@ import com.example.simplecalorietracker.databinding.ItemFoodEntryBinding
 import com.example.simplecalorietracker.utils.prettyCount
 import com.example.simplecalorietracker.utils.toHumanDate
 
-class UserFoodEntryAdapter : RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodEntryViewHolder>() {
+class UserFoodEntryAdapter(
+    val onUpdateClicked: (foodEntryEntity: FoodEntryEntity) -> Unit,
+    val onDeleteClicked: (foodEntryEntity: FoodEntryEntity) -> Unit
+) : RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodEntryViewHolder>() {
     private lateinit var binding: ItemFoodEntryBinding
     private val foodEntryList: MutableList<FoodEntryEntity> = mutableListOf()
 
@@ -33,7 +36,7 @@ class UserFoodEntryAdapter : RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodE
 
     override fun getItemCount() = foodEntryList.size
 
-    class UserFoodEntryViewHolder(private val binding: ItemFoodEntryBinding) :
+    inner class UserFoodEntryViewHolder(private val binding: ItemFoodEntryBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(foodEntry: FoodEntryEntity) {
             with(binding) {
@@ -47,10 +50,12 @@ class UserFoodEntryAdapter : RecyclerView.Adapter<UserFoodEntryAdapter.UserFoodE
                     popup.setOnMenuItemClickListener {
                         when (it.itemId) {
                             R.id.edit -> {
+                                onUpdateClicked(foodEntry)
                                 Toast.makeText(binding.root.context, "EDIT!", Toast.LENGTH_LONG)
                                     .show()
                             }
                             R.id.delete -> {
+                                onDeleteClicked(foodEntry)
                                 Toast.makeText(binding.root.context, "DELETE!", Toast.LENGTH_LONG)
                                     .show()
                             }

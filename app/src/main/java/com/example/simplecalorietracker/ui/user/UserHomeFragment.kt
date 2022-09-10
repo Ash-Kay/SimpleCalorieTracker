@@ -5,11 +5,14 @@ import android.view.*
 import android.widget.Toast
 import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simplecalorietracker.R
+import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.databinding.FragmentUserHomeBinding
+import com.example.simplecalorietracker.ui.SharedViewModel
 import com.example.simplecalorietracker.ui.user.adapter.UserFoodEntryAdapter
 import com.example.simplecalorietracker.utils.CalendarRangeValidator
 import com.example.simplecalorietracker.utils.Constants
@@ -31,6 +34,7 @@ class UserHomeFragment : Fragment() {
     private lateinit var dateRangePicker: MaterialDatePicker<Pair<Long, Long>>
 
     private val viewModel: UserHomeViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +51,7 @@ class UserHomeFragment : Fragment() {
         setupDatePicker()
 
         binding.fab.setOnClickListener {
+            sharedViewModel.updateItem(null)
             findNavController().navigate(R.id.action_userHomeFragment_to_addFoodEntryFragment)
         }
 
@@ -63,7 +68,7 @@ class UserHomeFragment : Fragment() {
 //            viewModel.getFoodEntries(0, 0)
 //        }
 
-        adapter = UserFoodEntryAdapter()
+        adapter = UserFoodEntryAdapter(::itemUpdateClicked, ::itemDeleteClicked)
         binding.rvFoodEntries.adapter = adapter
         binding.rvFoodEntries.layoutManager = LinearLayoutManager(context)
 
@@ -72,6 +77,15 @@ class UserHomeFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun itemUpdateClicked(foodEntryEntity: FoodEntryEntity) {
+        sharedViewModel.updateItem(foodEntryEntity)
+        findNavController().navigate(R.id.action_userHomeFragment_to_addFoodEntryFragment)
+    }
+
+    private fun itemDeleteClicked(foodEntryEntity: FoodEntryEntity) {
+
     }
 
     private fun renderViewState(state: UserHomeViewState) {

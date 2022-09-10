@@ -7,12 +7,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.simplecalorietracker.databinding.FragmentAddFoodEntryBinding
+import com.example.simplecalorietracker.ui.SharedViewModel
 import com.example.simplecalorietracker.utils.CalendarRangeValidator
 import com.example.simplecalorietracker.utils.Constants
 import com.example.simplecalorietracker.utils.NetworkHandler
+import com.example.simplecalorietracker.utils.toHumanDate
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -37,6 +40,9 @@ class AddFoodEntryFragment : Fragment() {
     private lateinit var datePicker: MaterialDatePicker<Long>
 
     private val viewModel: AddFoodEntryViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+
+    private var itemId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,7 +51,6 @@ class AddFoodEntryFragment : Fragment() {
     ): View {
         _binding = FragmentAddFoodEntryBinding.inflate(inflater, container, false)
 
-        setCurrentDateTime()
         setupTimePicker()
         setupDatePicker()
 
@@ -108,8 +113,19 @@ class AddFoodEntryFragment : Fragment() {
                     binding.inputFoodCalorie.error = "Not valid calorie input"
                     return@setOnClickListener
                 }
+                if (toLongOrDefault(0).absoluteValue == 0L) {
+                    binding.inputFoodCalorie.error = "Calorie can't be 0"
+                    return@setOnClickListener
+                }
                 if (toLongOrDefault(0).absoluteValue >= Int.MAX_VALUE) {
                     binding.inputFoodCalorie.error = "Input too long, max length 9 digit"
+                    return@setOnClickListener
+                }
+            }
+
+            with(binding.etDateTime.text.toString()) {
+                if (isBlank()) {
+                    binding.inputDateTime.error = "Date Time can't be blank"
                     return@setOnClickListener
                 }
             }
@@ -119,20 +135,63 @@ class AddFoodEntryFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            viewModel.submit(
-                binding.etFoodName.text.toString(),
-                binding.etFoodCalorie.text.toString().toLongOrDefault(0).absoluteValue,
-                //TODO: check how to handle
-                viewModel.dateTime.value ?: 0,
-                {
-                    findNavController().popBackStack()
-                }, {
-                    Toast.makeText(context, "Error Adding Food Entry!", Toast.LENGTH_SHORT).show()
-                }
-            )
+            val id = itemId
+            if(id == null) {
+                viewModel.submit(
+                    binding.etFoodName.text.toString(),
+                    binding.etFoodCalorie.text.toString().toLongOrDefault(0).absoluteValue,
+                    //TODO: check how to handle
+                    viewModel.dateTime.value ?: 0,
+                    {
+                        findNavController().popBackStack()
+                    }, {
+                        Toast.makeText(context, "Error Adding Food Entry!", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                )
+            }
+            else {
+                viewModel.update(
+                    id,
+                    binding.etFoodName.text.toString(),
+                    binding.etFoodCalorie.text.toString().toLongOrDefault(0).absoluteValue,
+                    //TODO: check how to handle
+                    viewModel.dateTime.value ?: 0,
+                    {
+                        findNavController().popBackStack()
+                    }, {
+                        Toast.makeText(context, "Error Updating Food Entry!", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                )
+            }
+        }
+
+        sharedViewModel.itemToUpdate.observe(viewLifecycleOwner) {
+            viewModel.setEditState(it)
+        }
+
+        viewModel.viewState.observe(viewLifecycleOwner) {
+            renderViewState(it)
         }
 
         return binding.root
+    }
+
+    private fun renderViewState(state: AddFoodEntryViewState) {
+        when (state) {
+            is AddFoodEntryViewState.Edit -> {
+                binding.etFoodName.setText(state.foodEntry.name)
+                binding.etFoodCalorie.setText(state.foodEntry.calorie.toString())
+                binding.etDateTime.setText(state.foodEntry.timestamp.toHumanDate())
+                viewModel.updateDateTime(state.foodEntry.timestamp)
+                itemId = state.foodEntry.id
+            }
+            AddFoodEntryViewState.Normal -> {
+                setCurrentDateTime()
+                itemId = null
+            }
+        }
     }
 
     private fun setupDatePicker() {

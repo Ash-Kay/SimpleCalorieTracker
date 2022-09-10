@@ -55,6 +55,23 @@ class FoodEntryRepositoryImpl @Inject constructor(
         return foodEntryDao.insertFoodEntries(foodEntries)
     }
 
+    override fun updateFoodEntryRemote(
+        id: Int,
+        foodName: String,
+        foodCalorie: Long,
+        timestamp: Long
+    ): Completable {
+        return retrofitService.updateFoodEntry(
+            AuthUtils.AUTH_TOKEN ?: "",
+            id,
+            CreateFoodEntryRequest(
+                foodName,
+                foodCalorie,
+                timestamp
+            )
+        )
+    }
+
     override fun deleteFoodEntry(foodEntry: FoodEntryEntity): Completable {
         return foodEntryDao.deleteFoodEntry(foodEntry)
     }

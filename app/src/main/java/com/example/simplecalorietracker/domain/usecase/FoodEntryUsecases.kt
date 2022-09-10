@@ -47,6 +47,24 @@ class CreateFoodEntryUsecase @Inject constructor(
     }
 }
 
+class UpdateFoodEntryUsecase @Inject constructor(
+    private val repository: FoodEntryRepository
+) {
+    operator fun invoke(
+        id: Int,
+        foodName: String,
+        foodCalorie: Long,
+        timestamp: Long
+    ): Completable {
+        return repository.updateFoodEntryRemote(
+            id = id,
+            foodName = foodName,
+            foodCalorie = foodCalorie,
+            timestamp = timestamp
+        )
+    }
+}
+
 class AddFoodEntryToLocalUsecase @Inject constructor(
     private val repository: FoodEntryRepository
 ) {

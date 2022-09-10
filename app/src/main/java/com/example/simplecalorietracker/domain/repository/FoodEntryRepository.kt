@@ -18,6 +18,8 @@ interface FoodEntryRepository {
 
     fun insertFoodEntries(foodEntries: List<FoodEntryEntity>): Completable
 
+    fun updateFoodEntryRemote(id: Int, foodName: String, foodCalorie: Long, timestamp: Long) : Completable
+
     fun deleteFoodEntry(foodEntry: FoodEntryEntity): Completable
 
     fun clearFoodEntries(): Completable

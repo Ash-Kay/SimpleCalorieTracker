@@ -1,6 +1,7 @@
 package com.example.simplecalorietracker.data.remote
 
 import com.example.simplecalorietracker.data.entity.FoodEntryEntity
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.*
 
@@ -26,4 +27,11 @@ interface RetrofitService {
         @Header("Authorization") authToken: String,
         @Body foodEntryRequest: CreateFoodEntryRequest
     ): Single<FoodEntryEntity>
+
+    @PATCH("/api/v1/foodentries/{id}")
+    fun updateFoodEntry(
+        @Header("Authorization") authToken: String,
+        @Path("id") id: Int,
+        @Body foodEntryRequest: CreateFoodEntryRequest
+    ): Completable
 }
