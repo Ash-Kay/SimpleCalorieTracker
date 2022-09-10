@@ -8,7 +8,7 @@
         android:title="@string/report"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action"
+        android:id="@+id/filter"
         android:icon="@drawable/ic_baseline_filter_alt_24"
         android:title="@string/filter"
         app:showAsAction="always" />

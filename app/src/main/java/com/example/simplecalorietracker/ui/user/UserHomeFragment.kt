@@ -15,10 +15,7 @@ import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.databinding.FragmentUserHomeBinding
 import com.example.simplecalorietracker.ui.SharedViewModel
 import com.example.simplecalorietracker.ui.user.adapter.UserFoodEntryAdapter
-import com.example.simplecalorietracker.utils.CalendarRangeValidator
-import com.example.simplecalorietracker.utils.Constants
-import com.example.simplecalorietracker.utils.NetworkHandler
-import com.example.simplecalorietracker.utils.toHumanDate
+import com.example.simplecalorietracker.utils.*
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
@@ -180,18 +177,6 @@ class UserHomeFragment : Fragment() {
             .dateRangePicker()
             .setCalendarConstraints(setupCalenderConstraint())
             .setTitleText("Select a date range")
-            .build()
-    }
-
-    private fun setupCalenderConstraint(): CalendarConstraints {
-        val today = MaterialDatePicker.todayInUtcMilliseconds()
-        val last3year = MaterialDatePicker.todayInUtcMilliseconds() - Constants.threeYearsInMillis
-
-        return CalendarConstraints.Builder()
-            .setOpenAt(today)
-            .setStart(last3year)
-            .setEnd(today)
-            .setValidator(CalendarRangeValidator(last3year, today))
             .build()
     }
 

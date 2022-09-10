@@ -21,5 +21,9 @@
     <fragment
         android:id="@+id/adminHomeFragment"
         android:name="com.example.simplecalorietracker.ui.admin.AdminHomeFragment"
-        android:label="AdminHome" />
+        android:label="AdminHome">
+        <action
+            android:id="@+id/action_userHomeFragment_to_addFoodEntryFragment"
+            app:destination="@id/addFoodEntryFragment" />
+    </fragment>
 </navigation>
