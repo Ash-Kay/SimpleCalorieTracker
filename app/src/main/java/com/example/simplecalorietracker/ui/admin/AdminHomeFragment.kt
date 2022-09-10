@@ -3,8 +3,6 @@ package com.example.simplecalorietracker.ui.admin
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
-import androidx.core.util.Pair
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -13,18 +11,16 @@ import com.example.simplecalorietracker.R
 import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.databinding.FragmentAdminHomeBinding
 import com.example.simplecalorietracker.ui.SharedViewModel
-import com.example.simplecalorietracker.ui.user.UserHomeViewState
+import com.example.simplecalorietracker.ui.base.BaseHomeFragment
 import com.example.simplecalorietracker.ui.user.adapter.UserFoodEntryAdapter
 import com.example.simplecalorietracker.utils.Constants
 import com.example.simplecalorietracker.utils.NetworkHandler
-import com.example.simplecalorietracker.utils.setupCalenderConstraint
 import com.example.simplecalorietracker.utils.toHumanDate
-import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AdminHomeFragment : Fragment() {
+class AdminHomeFragment : BaseHomeFragment<AdminHomeViewState>() {
 
     @Inject
     lateinit var networkHandler: NetworkHandler
@@ -32,10 +28,9 @@ class AdminHomeFragment : Fragment() {
     private var _binding: FragmentAdminHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: UserFoodEntryAdapter
-    private lateinit var dateRangePicker: MaterialDatePicker<Pair<Long, Long>>
 
-    private val viewModel: AdminHomeViewModel by viewModels()
-    private val sharedViewModel: SharedViewModel by activityViewModels()
+    override val viewModel: AdminHomeViewModel by viewModels()
+    override val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +43,6 @@ class AdminHomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAdminHomeBinding.inflate(inflater, container, false)
-
-        setupDatePicker()
 
         binding.srlHomeRoot.setOnRefreshListener {
             clearFilterAndFetch()
@@ -83,7 +76,7 @@ class AdminHomeFragment : Fragment() {
         return binding.root
     }
 
-    private fun renderViewState(state: AdminHomeViewState) {
+    override fun renderViewState(state: AdminHomeViewState) {
         when (state) {
             AdminHomeViewState.Idle -> {
                 checkInternetAndGetFoodEntries()
@@ -105,6 +98,32 @@ class AdminHomeFragment : Fragment() {
         }
     }
 
+    override fun itemUpdateClicked(foodEntryEntity: FoodEntryEntity) {
+        sharedViewModel.updateItem(foodEntryEntity)
+        findNavController().navigate(R.id.action_adminHomeFragment_to_addFoodEntryFragment)
+    }
+
+    override fun itemDeleteClicked(foodEntryEntity: FoodEntryEntity) {
+        if (networkHandler.isNetworkAvailable()) {
+            viewModel.deleteFoodEntry(foodEntryEntity)
+        } else {
+            viewModel.showNoInternetError()
+        }
+    }
+
+    override fun clearFilterAndFetch() {
+        binding.llFilter.visibility = View.GONE
+        checkInternetAndGetFoodEntries()
+    }
+
+    override fun checkInternetAndGetFoodEntries(start: Long, end: Long) {
+        if (networkHandler.isNetworkAvailable()) {
+            viewModel.getFoodEntries(start, end)
+        } else {
+            viewModel.showNoInternetError()
+        }
+    }
+
     private fun updateUiWithNewData(foodEntries: List<FoodEntryEntity>) {
         binding.srlHomeRoot.isRefreshing = false
         adapter.updateFoodEntryList(foodEntries)
@@ -122,41 +141,6 @@ class AdminHomeFragment : Fragment() {
             findNavController().navigate(R.id.action_adminHomeFragment_to_reportFragment)
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun itemUpdateClicked(foodEntryEntity: FoodEntryEntity) {
-        sharedViewModel.updateItem(foodEntryEntity)
-        findNavController().navigate(R.id.action_adminHomeFragment_to_addFoodEntryFragment)
-    }
-
-    private fun itemDeleteClicked(foodEntryEntity: FoodEntryEntity) {
-        if (networkHandler.isNetworkAvailable()) {
-            viewModel.deleteFoodEntry(foodEntryEntity)
-        } else {
-            viewModel.showNoInternetError()
-        }
-    }
-
-    private fun clearFilterAndFetch() {
-        binding.llFilter.visibility = View.GONE
-        checkInternetAndGetFoodEntries()
-    }
-
-    private fun checkInternetAndGetFoodEntries(start: Long = 0, end: Long = 0) {
-        if (networkHandler.isNetworkAvailable()) {
-            viewModel.getFoodEntries(start, end)
-        } else {
-            viewModel.showNoInternetError()
-        }
-    }
-
-    private fun setupDatePicker() {
-        dateRangePicker = MaterialDatePicker
-            .Builder
-            .dateRangePicker()
-            .setCalendarConstraints(setupCalenderConstraint())
-            .setTitleText("Select a date range")
-            .build()
     }
 
     override fun onDestroyView() {
