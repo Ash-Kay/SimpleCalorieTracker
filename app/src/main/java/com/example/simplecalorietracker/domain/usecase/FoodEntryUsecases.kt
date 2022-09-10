@@ -9,13 +9,13 @@ import javax.inject.Inject
 
 class GetFoodEntriesRemoteUsecase @Inject constructor(private val repository: FoodEntryRepository) {
     operator fun invoke(start: Long, end: Long): Single<List<FoodEntryEntity>> {
-        return repository.getFoodEntriesRemote(start, end)
+        return repository.getFoodEntriesRemote(start, end).map { it.sortedBy { it.timestamp } }
     }
 }
 
 class GetFoodEntriesLocalUsecase @Inject constructor(private val repository: FoodEntryRepository) {
     operator fun invoke(): Flowable<List<FoodEntryEntity>> {
-        return repository.getFoodEntriesLocal()
+        return repository.getFoodEntriesLocal().map { it.sortedBy { it.timestamp } }
     }
 }
 
