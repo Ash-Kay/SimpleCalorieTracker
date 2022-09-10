@@ -30,7 +30,6 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@color/black"
-                android:textSize="18sp"
                 tools:text="13th Dec 2022 - 1st Jan 2023" />
 
             <Button

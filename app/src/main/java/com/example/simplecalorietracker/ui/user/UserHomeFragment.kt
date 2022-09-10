@@ -14,9 +14,7 @@ import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.databinding.FragmentUserHomeBinding
 import com.example.simplecalorietracker.ui.SharedViewModel
 import com.example.simplecalorietracker.ui.user.adapter.UserFoodEntryAdapter
-import com.example.simplecalorietracker.utils.CalendarRangeValidator
-import com.example.simplecalorietracker.utils.Constants
-import com.example.simplecalorietracker.utils.NetworkHandler
+import com.example.simplecalorietracker.utils.*
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,17 +54,20 @@ class UserHomeFragment : Fragment() {
         }
 
         binding.srlHomeRoot.setOnRefreshListener {
-            checkInternetAndGetFoodEntries()
+            clearFilterAndFetch()
         }
 
         dateRangePicker.addOnPositiveButtonClickListener {
             //Added one day to make it till EOD
-            checkInternetAndGetFoodEntries(it.first, it.second + Constants.oneDayInMillis)
+            binding.llFilter.visibility = View.VISIBLE
+            val endDatePlusOneDay = it.second + Constants.oneDayInMillis - 1
+            binding.tvFilterDetails.text = "Filter: ${it.first.toHumanDate()} - ${endDatePlusOneDay.toHumanDate()}"
+            checkInternetAndGetFoodEntries(it.first, endDatePlusOneDay)
         }
 
-//        dateRangePicker.addOnNegativeButtonClickListener {
-//            viewModel.getFoodEntries(0, 0)
-//        }
+        binding.btnClearFilter.setOnClickListener {
+            clearFilterAndFetch()
+        }
 
         adapter = UserFoodEntryAdapter(::itemUpdateClicked, ::itemDeleteClicked)
         binding.rvFoodEntries.adapter = adapter
@@ -77,6 +78,11 @@ class UserHomeFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun clearFilterAndFetch() {
+        binding.llFilter.visibility = View.GONE
+        checkInternetAndGetFoodEntries()
     }
 
     private fun itemUpdateClicked(foodEntryEntity: FoodEntryEntity) {

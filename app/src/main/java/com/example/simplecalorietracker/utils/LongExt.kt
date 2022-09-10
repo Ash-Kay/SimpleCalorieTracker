@@ -21,8 +21,14 @@ fun Long.prettyCount(): String {
     }
 }
 
-fun Long.toHumanDate(): String {
+fun Long.toHumanDateTime(): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+    sdf.timeZone = TimeZone.getTimeZone("GMT")
+    return sdf.format(this)
+}
+
+fun Long.toHumanDate(): String {
+    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     sdf.timeZone = TimeZone.getTimeZone("GMT")
     return sdf.format(this)
 }

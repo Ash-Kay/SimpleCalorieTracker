@@ -15,14 +15,13 @@ import com.example.simplecalorietracker.ui.SharedViewModel
 import com.example.simplecalorietracker.utils.CalendarRangeValidator
 import com.example.simplecalorietracker.utils.Constants
 import com.example.simplecalorietracker.utils.NetworkHandler
-import com.example.simplecalorietracker.utils.toHumanDate
+import com.example.simplecalorietracker.utils.toHumanDateTime
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toLongOrDefault
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.absoluteValue
@@ -54,7 +53,7 @@ class AddFoodEntryFragment : Fragment() {
         setupDatePicker()
 
         viewModel.dateTime.observe(viewLifecycleOwner) {
-            binding.etDateTime.setText(it.toHumanDate())
+            binding.etDateTime.setText(it.toHumanDateTime())
         }
 
         datePicker.addOnPositiveButtonClickListener {
@@ -181,7 +180,7 @@ class AddFoodEntryFragment : Fragment() {
             is AddFoodEntryViewState.Edit -> {
                 binding.etFoodName.setText(state.foodEntry.name)
                 binding.etFoodCalorie.setText(state.foodEntry.calorie.toString())
-                binding.etDateTime.setText(state.foodEntry.timestamp.toHumanDate())
+                binding.etDateTime.setText(state.foodEntry.timestamp.toHumanDateTime())
                 viewModel.updateDateTime(state.foodEntry.timestamp)
                 itemId = state.foodEntry.id
             }
@@ -228,7 +227,7 @@ class AddFoodEntryFragment : Fragment() {
     private fun setCurrentDateTime() {
         val currTimestamp = System.currentTimeMillis()
         viewModel.updateDateTime(currTimestamp)
-        binding.etDateTime.setText(currTimestamp.toHumanDate())
+        binding.etDateTime.setText(currTimestamp.toHumanDateTime())
     }
 
     override fun onDestroyView() {

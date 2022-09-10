@@ -2,14 +2,13 @@ package com.example.simplecalorietracker.ui.user.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplecalorietracker.R
 import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.databinding.ItemFoodEntryBinding
 import com.example.simplecalorietracker.utils.prettyCount
-import com.example.simplecalorietracker.utils.toHumanDate
+import com.example.simplecalorietracker.utils.toHumanDateTime
 
 class UserFoodEntryAdapter(
     val onUpdateClicked: (foodEntryEntity: FoodEntryEntity) -> Unit,
@@ -40,7 +39,7 @@ class UserFoodEntryAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(foodEntry: FoodEntryEntity) {
             with(binding) {
-                tvDate.text = foodEntry.timestamp.toHumanDate()
+                tvDate.text = foodEntry.timestamp.toHumanDateTime()
                 tvFoodName.text = foodEntry.name
                 tvCalorieCount.text = foodEntry.calorie.prettyCount()
 
