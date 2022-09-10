@@ -33,6 +33,6 @@
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.example.simplecalorietracker.ui.report.ReportFragment"
-        android:label="fragment_report"
+        android:label="Admin Report"
         tools:layout="@layout/fragment_report" />
 </navigation>
