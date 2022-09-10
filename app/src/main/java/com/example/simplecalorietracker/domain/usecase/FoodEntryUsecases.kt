@@ -1,6 +1,7 @@
 package com.example.simplecalorietracker.domain.usecase
 
 import com.example.simplecalorietracker.data.entity.FoodEntryEntity
+import com.example.simplecalorietracker.data.remote.GetReportResponse
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
@@ -81,5 +82,13 @@ class AddFoodEntryToLocalUsecase @Inject constructor(
 ) {
     operator fun invoke(foodEntryEntity: FoodEntryEntity): Completable {
         return repository.insertFoodEntryLocal(foodEntryEntity)
+    }
+}
+
+class GetReportUsecase @Inject constructor(
+    private val repository: FoodEntryRepository
+) {
+    operator fun invoke(): Single<GetReportResponse> {
+        return repository.getReport()
     }
 }

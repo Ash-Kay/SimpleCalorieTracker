@@ -1,6 +1,7 @@
 package com.example.simplecalorietracker.domain.repository
 
 import com.example.simplecalorietracker.data.entity.FoodEntryEntity
+import com.example.simplecalorietracker.data.remote.GetReportResponse
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
@@ -25,4 +26,6 @@ interface FoodEntryRepository {
     fun deleteFoodEntry(foodEntry: FoodEntryEntity): Completable
 
     fun clearFoodEntries(): Completable
+
+    fun getReport() : Single<GetReportResponse>
 }

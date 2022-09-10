@@ -40,4 +40,9 @@ interface RetrofitService {
         @Header("Authorization") authToken: String,
         @Path("id") id: Int
     ): Completable
+
+    @GET("/api/v1/foodentries/report")
+    fun getReport(
+        @Header("Authorization") authToken: String
+    ): Single<GetReportResponse>
 }

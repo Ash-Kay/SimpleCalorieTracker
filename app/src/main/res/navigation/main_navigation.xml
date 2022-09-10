@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/userHomeFragment">
 
@@ -23,7 +24,15 @@
         android:name="com.example.simplecalorietracker.ui.admin.AdminHomeFragment"
         android:label="AdminHome">
         <action
-            android:id="@+id/action_userHomeFragment_to_addFoodEntryFragment"
+            android:id="@+id/action_adminHomeFragment_to_addFoodEntryFragment"
             app:destination="@id/addFoodEntryFragment" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_reportFragment"
+            app:destination="@id/reportFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/reportFragment"
+        android:name="com.example.simplecalorietracker.ui.report.ReportFragment"
+        android:label="fragment_report"
+        tools:layout="@layout/fragment_report" />
 </navigation>

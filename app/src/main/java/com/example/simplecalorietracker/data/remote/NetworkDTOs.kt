@@ -31,3 +31,9 @@ enum class Role(val roleName: String) {
     USER("USER"),
     ADMIN("ADMIN")
 }
+
+data class GetReportResponse(
+    val currentWeekEntryCount: Int,
+    val lastWeekEntryCount: Int,
+    val currentWeekAvgEntry: Float
+)

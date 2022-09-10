@@ -119,14 +119,14 @@ class AdminHomeFragment : Fragment() {
         if (item.itemId == R.id.filter) {
             dateRangePicker.show(parentFragmentManager, "DATE_PICKER_RANGE_ADMIN")
         } else if (item.itemId == R.id.report) {
-            //TODO: Add
+            findNavController().navigate(R.id.action_adminHomeFragment_to_reportFragment)
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun itemUpdateClicked(foodEntryEntity: FoodEntryEntity) {
         sharedViewModel.updateItem(foodEntryEntity)
-        findNavController().navigate(R.id.action_userHomeFragment_to_addFoodEntryFragment)
+        findNavController().navigate(R.id.action_adminHomeFragment_to_addFoodEntryFragment)
     }
 
     private fun itemDeleteClicked(foodEntryEntity: FoodEntryEntity) {

@@ -3,6 +3,7 @@ package com.example.simplecalorietracker.data
 import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.data.local.FoodEntryDao
 import com.example.simplecalorietracker.data.remote.CreateFoodEntryRequest
+import com.example.simplecalorietracker.data.remote.GetReportResponse
 import com.example.simplecalorietracker.data.remote.RetrofitService
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
 import com.example.simplecalorietracker.utils.AuthUtils
@@ -82,5 +83,9 @@ class FoodEntryRepositoryImpl @Inject constructor(
 
     override fun clearFoodEntries(): Completable {
         return foodEntryDao.clearFoodEntries()
+    }
+
+    override fun getReport(): Single<GetReportResponse> {
+        return retrofitService.getReport(AuthUtils.AUTH_TOKEN ?: "")
     }
 }

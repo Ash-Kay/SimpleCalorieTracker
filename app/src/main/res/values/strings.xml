@@ -14,4 +14,7 @@
     <string name="retry_login">Retry Login</string>
     <string name="clear">Clear</string>
     <string name="today_s_consumption">Today\'s consumption:</string>
+    <string name="food_entries_this_week">Food Entries this week</string>
+    <string name="food_entries_last_week">Food Entries last week</string>
+    <string name="average_calorie_consumption_per_day_this_week">Average Calorie consumption per day this week</string>
 </resources>
