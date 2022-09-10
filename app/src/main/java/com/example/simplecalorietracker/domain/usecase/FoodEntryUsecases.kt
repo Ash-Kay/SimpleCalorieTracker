@@ -65,6 +65,17 @@ class UpdateFoodEntryUsecase @Inject constructor(
     }
 }
 
+class DeleteFoodEntryUsecase @Inject constructor(
+    private val repository: FoodEntryRepository
+) {
+    operator fun invoke(
+        foodEntry: FoodEntryEntity
+    ): Completable {
+        return repository.deleteFoodEntryRemote(foodEntry)
+            .andThen(repository.deleteFoodEntry(foodEntry))
+    }
+}
+
 class AddFoodEntryToLocalUsecase @Inject constructor(
     private val repository: FoodEntryRepository
 ) {

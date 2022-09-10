@@ -85,7 +85,11 @@ class UserHomeFragment : Fragment() {
     }
 
     private fun itemDeleteClicked(foodEntryEntity: FoodEntryEntity) {
-
+        if (networkHandler.isNetworkAvailable()) {
+            viewModel.deleteFoodEntry(foodEntryEntity)
+        } else {
+            viewModel.showNoInternetError()
+        }
     }
 
     private fun renderViewState(state: UserHomeViewState) {

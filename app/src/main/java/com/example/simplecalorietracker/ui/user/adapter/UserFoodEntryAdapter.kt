@@ -51,13 +51,9 @@ class UserFoodEntryAdapter(
                         when (it.itemId) {
                             R.id.edit -> {
                                 onUpdateClicked(foodEntry)
-                                Toast.makeText(binding.root.context, "EDIT!", Toast.LENGTH_LONG)
-                                    .show()
                             }
                             R.id.delete -> {
                                 onDeleteClicked(foodEntry)
-                                Toast.makeText(binding.root.context, "DELETE!", Toast.LENGTH_LONG)
-                                    .show()
                             }
                         }
                         return@setOnMenuItemClickListener true

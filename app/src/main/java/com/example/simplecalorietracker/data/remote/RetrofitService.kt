@@ -34,4 +34,10 @@ interface RetrofitService {
         @Path("id") id: Int,
         @Body foodEntryRequest: CreateFoodEntryRequest
     ): Completable
+
+    @DELETE("/api/v1/foodentries/{id}")
+    fun deleteFoodEntry(
+        @Header("Authorization") authToken: String,
+        @Path("id") id: Int
+    ): Completable
 }

@@ -72,6 +72,10 @@ class FoodEntryRepositoryImpl @Inject constructor(
         )
     }
 
+    override fun deleteFoodEntryRemote(foodEntry: FoodEntryEntity): Completable {
+        return retrofitService.deleteFoodEntry(AuthUtils.AUTH_TOKEN ?: "", foodEntry.id)
+    }
+
     override fun deleteFoodEntry(foodEntry: FoodEntryEntity): Completable {
         return foodEntryDao.deleteFoodEntry(foodEntry)
     }

@@ -3,6 +3,8 @@ package com.example.simplecalorietracker.ui.user
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.simplecalorietracker.data.entity.FoodEntryEntity
+import com.example.simplecalorietracker.domain.usecase.DeleteFoodEntryUsecase
 import com.example.simplecalorietracker.domain.usecase.GetFoodEntriesLocalUsecase
 import com.example.simplecalorietracker.domain.usecase.GetFoodEntriesRemoteUsecase
 import com.example.simplecalorietracker.domain.usecase.UpdateLocalFoodEntriesUsecase
@@ -17,7 +19,8 @@ import javax.inject.Inject
 class UserHomeViewModel @Inject constructor(
     val getFoodEntriesRemoteUsecase: GetFoodEntriesRemoteUsecase,
     val getFoodEntriesLocalUsecase: GetFoodEntriesLocalUsecase,
-    val updateLocalFoodEntriesUsecase: UpdateLocalFoodEntriesUsecase
+    val updateLocalFoodEntriesUsecase: UpdateLocalFoodEntriesUsecase,
+    val deleteFoodEntryUsecase: DeleteFoodEntryUsecase
 ) : ViewModel() {
 
     private val _viewState = MutableLiveData<UserHomeViewState>(UserHomeViewState.Idle)
@@ -83,6 +86,18 @@ class UserHomeViewModel @Inject constructor(
 
     fun showNoInternetError() {
         _viewState.postValue(UserHomeViewState.Error("No Internet!"))
+    }
+
+    fun deleteFoodEntry(foodEntry: FoodEntryEntity) {
+        deleteFoodEntryUsecase(foodEntry)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                Timber.d("Deletion in remote and local success!")
+            }, {
+                _viewState.postValue(UserHomeViewState.Error("Error deleting data"))
+                Timber.e("ERROR!! Deleting food item")
+            }).also { dis -> flowDisposable.add(dis) }
     }
 
     override fun onCleared() {
