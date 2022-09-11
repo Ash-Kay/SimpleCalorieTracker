@@ -6,8 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.domain.usecase.DeleteFoodEntryUsecase
 import com.example.simplecalorietracker.domain.usecase.GetFoodEntriesLocalUsecase
-import com.example.simplecalorietracker.domain.usecase.GetFoodEntriesRemoteUsecase
-import com.example.simplecalorietracker.domain.usecase.UpdateLocalFoodEntriesUsecase
+import com.example.simplecalorietracker.domain.usecase.GetFoodEntriesRemoteAndUpdateCacheUsecase
 import com.example.simplecalorietracker.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -19,10 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserHomeViewModel @Inject constructor(
-    val getFoodEntriesRemoteUsecase: GetFoodEntriesRemoteUsecase,
     val getFoodEntriesLocalUsecase: GetFoodEntriesLocalUsecase,
-    val updateLocalFoodEntriesUsecase: UpdateLocalFoodEntriesUsecase,
-    val deleteFoodEntryUsecase: DeleteFoodEntryUsecase
+    val deleteFoodEntryUsecase: DeleteFoodEntryUsecase,
+    val getFoodEntriesRemoteAndUpdateCacheUsecase: GetFoodEntriesRemoteAndUpdateCacheUsecase
 ) : ViewModel() {
 
     private val _viewState = MutableLiveData<UserHomeViewState>(UserHomeViewState.Idle)
@@ -36,36 +34,15 @@ class UserHomeViewModel @Inject constructor(
 
     init {
         //Observe local cache, if it updates, update the ui
-        _viewState.postValue(UserHomeViewState.Loading)
-        getFoodEntriesLocalUsecase()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                updateTodayConsumption(it)
-                _viewState.postValue(UserHomeViewState.DataFetchSuccess(it))
-                Timber.d("Local food entry list fetch successful", it)
-            }, {
-                _viewState.postValue(UserHomeViewState.Error("Error fetching data"))
-                Timber.e("ERROR!! Fetching Food Entry List", it)
-            }).also { dis -> flowDisposable.add(dis) }
+        getCacheFoodEntries()
     }
 
     fun getFoodEntries(start: Long = 0, end: Long = 0) {
         _viewState.postValue(UserHomeViewState.Loading)
-        getFoodEntriesRemoteUsecase(start, end)
+        getFoodEntriesRemoteAndUpdateCacheUsecase(start, end)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                //Only cache if no filter applied
-                if (start == 0L && end == 0L) {
-                    updateLocalFoodEntriesUsecase(it)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe {
-                            Timber.d("Local Food Entry List updated successfully", it)
-                        }
-                        .also { dis -> disposable.add(dis) }
-                }
                 _viewState.postValue(UserHomeViewState.DataFetchSuccess(it))
                 Timber.d("Remote food entry list fetch successful", it)
             }, {

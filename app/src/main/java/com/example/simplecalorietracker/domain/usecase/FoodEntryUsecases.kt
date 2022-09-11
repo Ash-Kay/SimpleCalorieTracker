@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class GetFoodEntriesRemoteUsecase @Inject constructor(private val repository: FoodEntryRepository) {
     operator fun invoke(start: Long, end: Long): Single<List<FoodEntryEntity>> {
-        return repository.getFoodEntriesRemote(start, end).map { it.sortedBy { it.timestamp } }
+        return repository.getFoodEntriesRemote(start, end)
     }
 }
 
@@ -29,6 +29,23 @@ class GetFoodEntryUsecase @Inject constructor(private val repository: FoodEntryR
 class UpdateLocalFoodEntriesUsecase @Inject constructor(private val repository: FoodEntryRepository) {
     operator fun invoke(foodEntriesList: List<FoodEntryEntity>): Completable {
         return repository.clearFoodEntries().andThen(repository.insertFoodEntries(foodEntriesList))
+    }
+}
+
+class GetFoodEntriesRemoteAndUpdateCacheUsecase @Inject constructor(
+    private val getFoodEntriesRemote: GetFoodEntriesRemoteUsecase,
+    private val updateLocalFoodEntriesUsecase: UpdateLocalFoodEntriesUsecase
+) {
+    operator fun invoke(start: Long, end: Long): Single<List<FoodEntryEntity>> {
+        return getFoodEntriesRemote(start, end)
+            .flatMap {
+                //Only cache if no filter applied
+                if (start == 0L && end == 0L) {
+                    updateLocalFoodEntriesUsecase(it).andThen(Single.just(it))
+                } else {
+                    Single.just(it)
+                }
+            }.map { list -> list.sortedBy { it.timestamp } }
     }
 }
 
