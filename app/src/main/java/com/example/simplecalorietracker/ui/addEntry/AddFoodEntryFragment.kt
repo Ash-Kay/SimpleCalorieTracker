@@ -63,6 +63,7 @@ class AddFoodEntryFragment : Fragment() {
 
         timePicker.addOnPositiveButtonClickListener {
             val cal = Calendar.getInstance()
+            cal.timeZone = TimeZone.getTimeZone("GMT")
             cal.timeInMillis =
                 viewModel.dateTime.value ?: MaterialDatePicker.todayInUtcMilliseconds()
             cal.set(Calendar.HOUR, timePicker.hour)
