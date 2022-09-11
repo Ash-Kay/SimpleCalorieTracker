@@ -7,10 +7,9 @@ import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.domain.usecase.DeleteFoodEntryUsecase
 import com.example.simplecalorietracker.domain.usecase.GetFoodEntriesLocalUsecase
 import com.example.simplecalorietracker.domain.usecase.GetFoodEntriesRemoteAndUpdateCacheUsecase
+import com.example.simplecalorietracker.utils.IScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -18,7 +17,8 @@ import javax.inject.Inject
 class AdminHomeViewModel @Inject constructor(
     val getFoodEntriesLocalUsecase: GetFoodEntriesLocalUsecase,
     val deleteFoodEntryUsecase: DeleteFoodEntryUsecase,
-    val getFoodEntriesRemoteAndUpdateCacheUsecase: GetFoodEntriesRemoteAndUpdateCacheUsecase
+    val getFoodEntriesRemoteAndUpdateCacheUsecase: GetFoodEntriesRemoteAndUpdateCacheUsecase,
+    private val scheduler: IScheduler
 ) : ViewModel() {
 
     private val _viewState = MutableLiveData<AdminHomeViewState>(AdminHomeViewState.Idle)
@@ -35,8 +35,8 @@ class AdminHomeViewModel @Inject constructor(
     fun getFoodEntries(start: Long = 0, end: Long = 0) {
         _viewState.postValue(AdminHomeViewState.Loading)
         getFoodEntriesRemoteAndUpdateCacheUsecase(start, end)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(scheduler.io)
+            .observeOn(scheduler.mainThread)
             .subscribe({
                 _viewState.postValue(AdminHomeViewState.DataFetchSuccess(it))
                 Timber.d("Remote food entry list fetch successful", it)
@@ -51,8 +51,8 @@ class AdminHomeViewModel @Inject constructor(
 
         _viewState.postValue(AdminHomeViewState.Loading)
         getFoodEntriesLocalUsecase()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(scheduler.io)
+            .observeOn(scheduler.mainThread)
             .subscribe({
                 _viewState.postValue(AdminHomeViewState.CacheDataFetchSuccess(it))
                 Timber.d("Local food entry list fetch successful", it)
@@ -68,8 +68,8 @@ class AdminHomeViewModel @Inject constructor(
 
     fun deleteFoodEntry(foodEntry: FoodEntryEntity) {
         deleteFoodEntryUsecase(foodEntry)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(scheduler.io)
+            .observeOn(scheduler.mainThread)
             .subscribe({
                 Timber.d("Deletion in remote and local success!")
             }, {

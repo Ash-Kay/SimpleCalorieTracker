@@ -7,10 +7,9 @@ import com.example.simplecalorietracker.data.entity.FoodEntryEntity
 import com.example.simplecalorietracker.domain.usecase.AddFoodEntryToLocalUsecase
 import com.example.simplecalorietracker.domain.usecase.CreateFoodEntryUsecase
 import com.example.simplecalorietracker.domain.usecase.UpdateFoodEntryUsecase
+import com.example.simplecalorietracker.utils.IScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -18,7 +17,8 @@ import javax.inject.Inject
 class AddFoodEntryViewModel @Inject constructor(
     val createFoodEntryUsecase: CreateFoodEntryUsecase,
     val updateFoodEntryUsecase: UpdateFoodEntryUsecase,
-    val addFoodEntryToLocalUsecase: AddFoodEntryToLocalUsecase
+    val addFoodEntryToLocalUsecase: AddFoodEntryToLocalUsecase,
+    private val scheduler: IScheduler
 ) : ViewModel() {
 
     private val _viewState = MutableLiveData<AddFoodEntryViewState>(AddFoodEntryViewState.Normal)
@@ -53,12 +53,12 @@ class AddFoodEntryViewModel @Inject constructor(
             foodCalorie = foodCalorie,
             timestamp = timestamp
         )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(scheduler.io)
+            .observeOn(scheduler.mainThread)
             .subscribe({
                 addFoodEntryToLocalUsecase(it)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(scheduler.io)
+                    .observeOn(scheduler.mainThread)
                     .subscribe { Timber.d("Food entry added to cache") }
                     .also { dis -> disposable.add(dis) }
                 onSuccess()
@@ -83,12 +83,12 @@ class AddFoodEntryViewModel @Inject constructor(
             foodCalorie = foodCalorie,
             timestamp = timestamp
         )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(scheduler.io)
+            .observeOn(scheduler.mainThread)
             .subscribe({
                 addFoodEntryToLocalUsecase(FoodEntryEntity(id, timestamp, foodName, foodCalorie))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(scheduler.io)
+                    .observeOn(scheduler.mainThread)
                     .subscribe { Timber.d("Food entry updated in cache") }
                     .also { dis -> disposable.add(dis) }
                 onSuccess()

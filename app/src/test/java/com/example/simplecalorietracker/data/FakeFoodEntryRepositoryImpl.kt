@@ -22,7 +22,7 @@ class FakeFoodEntryRepositoryImpl : FoodEntryRepository {
                     id = index,
                     name = c.toString(),
                     calorie = index.toLong(),
-                    timestamp = index.toLong(),
+                    timestamp = System.currentTimeMillis(),
                 )
             )
         }
@@ -39,7 +39,12 @@ class FakeFoodEntryRepositoryImpl : FoodEntryRepository {
     }
 
     override fun insertFoodEntryLocal(foodEntry: FoodEntryEntity): Completable {
-        foodEntriesLocal.add(foodEntry)
+        val index = foodEntriesLocal.indexOfFirst { it.id == foodEntry.id }
+        if (index != -1) {
+            foodEntriesLocal[index] = foodEntry
+        } else {
+            foodEntriesLocal.add(foodEntry)
+        }
         return Completable.complete()
     }
 

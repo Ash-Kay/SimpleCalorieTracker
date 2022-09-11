@@ -14,7 +14,8 @@ import com.example.simplecalorietracker.data.remote.RetrofitService
 import com.example.simplecalorietracker.domain.repository.AuthRepository
 import com.example.simplecalorietracker.domain.repository.FoodEntryRepository
 import com.example.simplecalorietracker.utils.AuthUtils
-import com.example.simplecalorietracker.utils.NetworkHandler
+import com.example.simplecalorietracker.utils.IScheduler
+import com.example.simplecalorietracker.utils.SchedulerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -103,5 +104,11 @@ class ApplicationModule {
         retrofitService: RetrofitService
     ): AuthRepository {
         return AuthRepositoryImpl(retrofitService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideScheduler(): IScheduler {
+        return SchedulerImpl()
     }
 }
