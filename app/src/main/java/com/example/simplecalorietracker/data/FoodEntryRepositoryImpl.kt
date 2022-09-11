@@ -24,10 +24,6 @@ class FoodEntryRepositoryImpl @Inject constructor(
         return retrofitService.getFoodEntries(1, start, end)
     }
 
-    override fun getFoodEntryById(id: Int): Single<FoodEntryEntity> {
-        return foodEntryDao.getFoodEntryById(id)
-    }
-
     override fun insertFoodEntryLocal(foodEntry: FoodEntryEntity): Completable {
         return foodEntryDao.insertFoodEntry(foodEntry)
     }

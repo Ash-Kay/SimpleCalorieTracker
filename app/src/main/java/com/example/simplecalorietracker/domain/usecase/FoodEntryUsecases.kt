@@ -20,12 +20,6 @@ class GetFoodEntriesLocalUsecase @Inject constructor(private val repository: Foo
     }
 }
 
-class GetFoodEntryUsecase @Inject constructor(private val repository: FoodEntryRepository) {
-    operator fun invoke(id: Int): Single<FoodEntryEntity> {
-        return repository.getFoodEntryById(id)
-    }
-}
-
 class UpdateLocalFoodEntriesUsecase @Inject constructor(private val repository: FoodEntryRepository) {
     operator fun invoke(foodEntriesList: List<FoodEntryEntity>): Completable {
         return repository.clearFoodEntries().andThen(repository.insertFoodEntries(foodEntriesList))
