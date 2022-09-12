@@ -16,13 +16,14 @@ class FakeFoodEntryRepositoryImpl : FoodEntryRepository {
 
     init {
         val entryToInsert = mutableListOf<FoodEntryEntity>()
+        var timestamp = System.currentTimeMillis()
         ('a'..'z').forEachIndexed { index, c ->
             entryToInsert.add(
                 FoodEntryEntity(
                     id = index,
                     name = c.toString(),
                     calorie = index.toLong(),
-                    timestamp = System.currentTimeMillis(),
+                    timestamp = ++timestamp,
                 )
             )
         }
